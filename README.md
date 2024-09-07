@@ -2,8 +2,9 @@
 
 ## Description
 
-<!-- Please Update the Project Demo so we have a better understanding what is the all project about -->
-<!-- TODO: @(nimrid) -->
+A platform where AI Artists and creators generate stunning AI ART, mint them as NFTs on the Solana network using METAPLEX
+
+SHOWROOM: Minted NFTs gets displayed here and sold to collectors
 
 ## Key Features
 
@@ -12,7 +13,7 @@
 - Frontend: NextJS, TypeScript, TailwindCSS
 - Backend: NodeJS, Express
 - Database: MongoDB
-- Wallet Integration:
+- Wallet Integration: Solana wallet (Solflare, Phantom)
 
 ## Getting Started
 
