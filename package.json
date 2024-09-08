@@ -1,5 +1,5 @@
 {
-  "name": "Favian_garden",
+  "name": "favian_garden",
   "private": true,
   "scripts": {
     "build": "turbo build",
