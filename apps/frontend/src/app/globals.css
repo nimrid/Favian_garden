@@ -89,3 +89,8 @@
     #3ab54a 100%
   );
 }
+
+.textarea-gradient {
+  box-shadow: 5px 5px 10px 0px #ffffff1a inset;
+  box-shadow: -5px -5px 10px 0px #ffffff1a inset;
+}
