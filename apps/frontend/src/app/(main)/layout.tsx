@@ -5,6 +5,7 @@ import {
 } from "@/components/ui/resizable";
 import React from "react";
 import { MenuBarComponent } from "./_components/menu-bar";
+import { SideBarComponent } from "./_components/sidebar/sidebar";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -26,16 +27,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, ...props }) => {
         <ResizableHandle />
 
         {/* Body */}
-        <ResizablePanel>
-          <div>{children}</div>
-        </ResizablePanel>
+        <ResizablePanel>{children}</ResizablePanel>
 
         {/* Second Handle */}
         <ResizableHandle />
 
         {/* Right Side Bar */}
-        <ResizablePanel defaultSize={17} minSize={17} maxSize={20}>
-          This is 3rd Side Bar
+        <ResizablePanel defaultSize={20} minSize={20} maxSize={20}>
+          <SideBarComponent />
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
