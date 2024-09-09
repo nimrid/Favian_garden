@@ -28,7 +28,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, ...props }) => {
 
         {/* Body */}
         <ResizablePanel>
-          <div>{children}</div>
+          <main>{children}</main>
         </ResizablePanel>
 
         {/* Second Handle */}
