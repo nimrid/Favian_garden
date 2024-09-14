@@ -1,13 +1,15 @@
 "use client";
 
-import { Separator } from "@/components/ui/separator";
-import { useApp } from "@/store";
-import { User } from "@/types/user";
 import * as React from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+
+import { buttonVariants } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib";
+import { User } from "@/types/user";
 import { menuItems } from "./menu-bar-constants";
 import UserItem from "./user-item";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib";
 
 const dummyUser: User = {
   id: 1,
@@ -16,8 +18,7 @@ const dummyUser: User = {
 };
 
 export const MenuBarComponent = () => {
-  const appStore = useApp();
-  console.log("App Store: ", appStore);
+  const pathname = usePathname();
 
   return (
     <>
@@ -38,16 +39,15 @@ export const MenuBarComponent = () => {
               {/* Menu Item */}
               {menuItem.items?.map((item, idx) => (
                 <div key={`${item.name}__${idx}`} className="w-full px-6">
-                  <Button
-                    variant={"ghost"}
+                  <Link
+                    href={item.route}
                     className={cn(
+                      buttonVariants({
+                        variant: "ghost",
+                      }),
                       "w-full",
-                      item.uniqueId === appStore.selectedMenuItem?.uniqueId &&
-                        "bg-muted-1"
+                      item.route === pathname && "bg-muted-1"
                     )}
-                    onClick={() => {
-                      appStore.setSelectedMenuItem(item);
-                    }}
                   >
                     <div className="w-full flex items-center space-x-4">
                       <div>
@@ -55,7 +55,7 @@ export const MenuBarComponent = () => {
                       </div>
                       <div className="col-span-4">{item.name}</div>
                     </div>
-                  </Button>
+                  </Link>
                 </div>
               ))}
 
