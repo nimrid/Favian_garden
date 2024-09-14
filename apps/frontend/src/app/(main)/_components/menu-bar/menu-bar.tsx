@@ -21,7 +21,7 @@ export const MenuBarComponent = () => {
 
   return (
     <>
-      <aside className="group/sidebar h-full dark:bg-background overflow-y-auto relative flex w-full flex-col z-[99999]  overflow-x-hidden">
+      <aside className="group/sidebar h-full dark:bg-background overflow-y-auto relative flex w-full flex-col  overflow-x-hidden">
         <div className="p-5">
           <UserItem user={dummyUser} />
         </div>

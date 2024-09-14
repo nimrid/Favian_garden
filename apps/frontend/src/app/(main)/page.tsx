@@ -1,19 +1,40 @@
 "use client";
 
+import {
+  ChevronLeft,
+  Download,
+  Plus,
+  RotateCw,
+  WandSparkles,
+} from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, RotateCw, WandSparkles } from "lucide-react";
+
+import { cn } from "@/lib";
 import {
   bulbLightningIcon,
   landscapeIcon,
+  mintIcon,
   portraitIcon,
   squareIcon,
 } from "./_components/generate-page";
-import { PageTitle } from "./_components/page-title";
 import ImageContainer from "./_components/image-container";
-import { cn } from "@/lib";
+import { PageTitle } from "./_components/page-title";
+
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import Image from "next/image";
 
 const buttonLabels = [
   "Anime",
@@ -29,13 +50,14 @@ const buttonLabels = [
 
 export default function HomePage() {
   const [text, setText] = React.useState("");
+  const [mintBtnClicked, setMintBtnClicked] = React.useState(true);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
   };
 
   return (
-    <main className="container max-w-7xl mx-auto p-10 w-full h-screen overflow-y-auto pb-32">
+    <ScrollArea className="container max-w-7xl mx-auto p-10 w-full h-screen overflow-y-auto pb-32">
       {/* Top Section */}
       <section className="flex items-center justify-end">
         <Button variant={"ghost"} size={"icon"} className="bg-accent-muted">
@@ -102,7 +124,7 @@ export default function HomePage() {
               key={label}
               variant={"outline"}
               size={"lg"}
-              className={cn("rounded-xl border-green-300 min-w-36")}
+              className={cn("rounded-xl border-green-500/50 min-w-36")}
             >
               {label}
             </Button>
@@ -157,16 +179,95 @@ export default function HomePage() {
             </Button>
           </div>
 
-          <Button
-            className={cn("min-w-[30rem] bg-accent-1 hover:bg-accent-1/80")}
-          >
-            <div className="flex space-x-3 items-center">
-              <WandSparkles className="w-5 h-5" />
-              <p>Generate</p>
-            </div>
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                className={cn("min-w-[30rem] bg-accent-1 hover:bg-accent-1/80")}
+              >
+                <div className="flex space-x-3 items-center">
+                  <WandSparkles className="w-5 h-5" />
+                  <p>Generate</p>
+                </div>
+              </Button>
+            </DialogTrigger>
+
+            <DialogContent className="min-w-[90%] lg:min-w-[70%] xl:min-w-[50%]">
+              <DialogHeader>
+                <div className="flex space-x-5 items-center">
+                  <div className="min-w-[280px] min-h-[312px]">
+                    <AspectRatio ratio={3 / 2}>
+                      <Image
+                        src={"/images/dialog-nft.png"}
+                        alt="NFT Dialog Image"
+                        width={280}
+                        height={312}
+                      />
+                    </AspectRatio>
+                  </div>
+
+                  <div className="w-full h-full flex flex-col justify-between">
+                    {mintBtnClicked ? (
+                      <div>
+                        <div className="flex items-center space-x-5">
+                          <Button
+                            variant={"secondary"}
+                            size={"sm"}
+                            className={cn("w-8 h-8 p-1")}
+                          >
+                            <ChevronLeft className="w-4 h-4" />
+                          </Button>
+
+                          <PageTitle label="Quick Mint" as="h4" />
+                        </div>
+
+                        <div>
+                          <div></div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <DialogTitle className="mb-6">NFT World</DialogTitle>
+                        <DialogDescription>
+                          <h2 className="text-lg mb-3">Caption</h2>
+                          <p>
+                            This is an image of an Imaginary nft world with lots
+                            of colours and depth. It depicts An Imaginary
+                            Calmness and peace
+                          </p>
+                        </DialogDescription>
+                        <DialogFooter className="mt-3">
+                          <Button variant={"link"} className="text-blue-500">
+                            Generate another response
+                          </Button>
+                        </DialogFooter>
+                      </div>
+                    )}
+
+                    <div className="flex items-center w-full h-fit justify-between mt-auto self-end">
+                      <Button
+                        variant={"outline"}
+                        className={cn("min-w-40 border-green-300")}
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        <span>Download</span>
+                      </Button>
+
+                      <Button
+                        className={cn(
+                          "bg-green-500 hover:bg-green-500/80 min-w-40"
+                        )}
+                      >
+                        <span>{mintIcon("w-4 h-4 mr-2")}</span>
+                        <span>Mint</span>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
         </div>
       </section>
-    </main>
+    </ScrollArea>
   );
 }

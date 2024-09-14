@@ -102,24 +102,3 @@
   box-shadow: 5px 5px 10px 0px #ffffff1a inset;
   box-shadow: -5px -5px 10px 0px #ffffff1a inset;
 }
-
-/* Scroll Bar */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: var(--muted-2);
-  border-radius: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background-color: var(--white-2);
-}
-
-/* Optional: Add a subtle box shadow to the thumb for a slight 3D effect */
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--background-1);
-  box-shadow: var(--muted-2);
-}

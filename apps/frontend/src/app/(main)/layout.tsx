@@ -1,9 +1,11 @@
+import * as React from "react";
+
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import React from "react";
+import { cn } from "@/lib";
 import { MenuBarComponent } from "./_components/menu-bar";
 import { SideBarComponent } from "./_components/sidebar/sidebar";
 
@@ -15,8 +17,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, ...props }) => {
   // TODO: This will be a protected route | authenticate user before using this route
   // (@SOUMITRO-SAHA)
 
+  const isDevMode = process.env.NODE_ENV !== "production";
+
   return (
-    <div {...props} className="w-screen h-screen">
+    <div
+      {...props}
+      className={cn("w-screen h-screen", isDevMode && "debug-screens")}
+    >
       <ResizablePanelGroup direction="horizontal">
         {/* Side Bar Menu */}
         <ResizablePanel defaultSize={17} minSize={17} maxSize={20}>

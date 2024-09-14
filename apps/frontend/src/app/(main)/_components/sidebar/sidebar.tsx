@@ -45,7 +45,7 @@ const generateHistories: GenerateHistory[] = [
 
 export const SideBarComponent = () => {
   return (
-    <aside className="group/right-sidebar h-full dark:bg-background overflow-y-auto relative flex w-full flex-col z-[99999]  overflow-x-hidden px-3">
+    <aside className="group/right-sidebar h-full dark:bg-background overflow-y-auto relative flex w-full flex-col  overflow-x-hidden px-3">
       <div className="flex items-center justify-between mt-6">
         <h3 className="text-2xl font-[600]">Recent</h3>
 
@@ -62,7 +62,7 @@ export const SideBarComponent = () => {
               Delete All
             </div>
           </AlertDialogTrigger>
-          <AlertDialogContent>
+          <AlertDialogContent className="border-accent-1/50">
             <AlertDialogHeader>
               <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
               <AlertDialogDescription>
@@ -71,8 +71,12 @@ export const SideBarComponent = () => {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction>Continue</AlertDialogAction>
+              <AlertDialogCancel className="bg-background-1">
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction className="bg-accent-1 hover:bg-accent-1/80">
+                Continue
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
