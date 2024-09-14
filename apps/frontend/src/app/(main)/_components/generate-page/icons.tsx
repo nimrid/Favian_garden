@@ -17,3 +17,48 @@ export const bulbLightningIcon = (className?: string) => {
     </svg>
   );
 };
+
+export const squareIcon = (className?: string) => {
+  return (
+    <svg
+      width="14"
+      height="15"
+      viewBox="0 0 14 15"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn(className)}
+    >
+      <rect x="0.5" y="1" width="13" height="13" rx="3.5" stroke="white" />
+    </svg>
+  );
+};
+
+export const portraitIcon = (className?: string) => {
+  return (
+    <svg
+      width="15"
+      height="21"
+      viewBox="0 0 15 21"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn(className)}
+    >
+      <rect x="1" y="1" width="13" height="19" rx="3.5" stroke="white" />
+    </svg>
+  );
+};
+
+export const landscapeIcon = (className?: string) => {
+  return (
+    <svg
+      width="27"
+      height="15"
+      viewBox="0 0 27 15"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn(className)}
+    >
+      <rect x="1" y="1" width="25" height="13" rx="3.5" stroke="white" />
+    </svg>
+  );
+};

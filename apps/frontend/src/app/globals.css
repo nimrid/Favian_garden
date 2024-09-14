@@ -63,12 +63,22 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
+
+  .theme {
+    --background-1: #12141d;
+    --muted-1: #292B30;
+    --muted-2: #363840;
+    --accent-muted: "#0EDD4833";
+    --accent-1: "#0EDD48";
+    --border-1: #FFFFFF33;
+  }
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background-1;
   }
@@ -83,14 +93,33 @@
 
 .gradient-border {
   border: 2px solid;
-  border-image-source: linear-gradient(
-    103.24deg,
-    rgba(253, 253, 253, 0.65) 0%,
-    #3ab54a 100%
-  );
+  border-image-source: linear-gradient(103.24deg,
+      rgba(253, 253, 253, 0.65) 0%,
+      #3ab54a 100%);
 }
 
 .textarea-gradient {
   box-shadow: 5px 5px 10px 0px #ffffff1a inset;
   box-shadow: -5px -5px 10px 0px #ffffff1a inset;
+}
+
+/* Scroll Bar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--muted-2);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--white-2);
+}
+
+/* Optional: Add a subtle box shadow to the thumb for a slight 3D effect */
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--background-1);
+  box-shadow: var(--muted-2);
 }
