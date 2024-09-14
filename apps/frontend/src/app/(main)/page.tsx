@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  ChevronLeft,
-  Download,
-  Plus,
-  RotateCw,
-  WandSparkles,
-} from "lucide-react";
+import { Download, Plus, RotateCw, WandSparkles } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
@@ -35,6 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
+import MintForm from "./_components/generate-page/mint-form";
 
 const buttonLabels = [
   "Anime",
@@ -50,7 +45,7 @@ const buttonLabels = [
 
 export default function HomePage() {
   const [text, setText] = React.useState("");
-  const [mintBtnClicked, setMintBtnClicked] = React.useState(true);
+  const [mintBtnClicked, setMintBtnClicked] = React.useState(false);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setText(e.target.value);
@@ -191,7 +186,7 @@ export default function HomePage() {
               </Button>
             </DialogTrigger>
 
-            <DialogContent className="min-w-[90%] lg:min-w-[70%] xl:min-w-[50%]">
+            <DialogContent className="bg-muted-1 border-green-500/50 min-w-[90%] lg:min-w-[70%] xl:min-w-[50%]">
               <DialogHeader>
                 <div className="flex space-x-5 items-center">
                   <div className="min-w-[280px] min-h-[312px]">
@@ -205,26 +200,16 @@ export default function HomePage() {
                     </AspectRatio>
                   </div>
 
-                  <div className="w-full h-full flex flex-col justify-between">
-                    {mintBtnClicked ? (
-                      <div>
-                        <div className="flex items-center space-x-5">
-                          <Button
-                            variant={"secondary"}
-                            size={"sm"}
-                            className={cn("w-8 h-8 p-1")}
-                          >
-                            <ChevronLeft className="w-4 h-4" />
-                          </Button>
-
-                          <PageTitle label="Quick Mint" as="h4" />
-                        </div>
-
-                        <div>
-                          <div></div>
-                        </div>
-                      </div>
-                    ) : (
+                  {mintBtnClicked ? (
+                    <div className="w-full h-full">
+                      <MintForm
+                        onClick={() => {
+                          setMintBtnClicked((prev) => !prev);
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-full h-full flex flex-col justify-between">
                       <div>
                         <DialogTitle className="mb-6">NFT World</DialogTitle>
                         <DialogDescription>
@@ -241,27 +226,30 @@ export default function HomePage() {
                           </Button>
                         </DialogFooter>
                       </div>
-                    )}
 
-                    <div className="flex items-center w-full h-fit justify-between mt-auto self-end">
-                      <Button
-                        variant={"outline"}
-                        className={cn("min-w-40 border-green-300")}
-                      >
-                        <Download className="w-4 h-4 mr-2" />
-                        <span>Download</span>
-                      </Button>
+                      <div className="flex items-center w-full h-fit justify-between mt-auto self-end">
+                        <Button
+                          variant={"outline"}
+                          className={cn("min-w-40 border-green-300")}
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          <span>Download</span>
+                        </Button>
 
-                      <Button
-                        className={cn(
-                          "bg-green-500 hover:bg-green-500/80 min-w-40"
-                        )}
-                      >
-                        <span>{mintIcon("w-4 h-4 mr-2")}</span>
-                        <span>Mint</span>
-                      </Button>
+                        <Button
+                          className={cn(
+                            "bg-green-500 hover:bg-green-500/80 min-w-40"
+                          )}
+                          onClick={() => {
+                            setMintBtnClicked((prev) => !prev);
+                          }}
+                        >
+                          <span>{mintIcon("w-4 h-4 mr-2")}</span>
+                          <span>Mint</span>
+                        </Button>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </DialogHeader>
             </DialogContent>
