@@ -52,7 +52,7 @@
     --muted-foreground: 0 0% 63.9%;
     --accent: 0 0% 14.9%;
     --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
     --input: 0 0% 14.9%;
@@ -63,12 +63,22 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
+
+  .theme {
+    --background-1: #12141d;
+    --muted-1: #292B30;
+    --muted-2: #363840;
+    --accent-muted: "#0EDD4833";
+    --accent-1: "#0EDD48";
+    --border-1: #FFFFFF33;
+  }
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background-1;
   }
@@ -83,11 +93,9 @@
 
 .gradient-border {
   border: 2px solid;
-  border-image-source: linear-gradient(
-    103.24deg,
-    rgba(253, 253, 253, 0.65) 0%,
-    #3ab54a 100%
-  );
+  border-image-source: linear-gradient(103.24deg,
+      rgba(253, 253, 253, 0.65) 0%,
+      #3ab54a 100%);
 }
 
 .textarea-gradient {
