@@ -12,3 +12,11 @@ export type MenuItem = {
   prefix?: React.ReactNode;
   postfix?: React.ReactNode;
 };
+
+export enum Routes {
+  Generate = "/",
+  MyCreations = "/my-creations",
+  Market = "/market",
+  Settings = "/settings",
+  Help = "/help",
+}
