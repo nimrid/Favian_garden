@@ -4,7 +4,7 @@ interface HelpPageProps {
   //Props
 }
 
-const HelpPage: React.FC<HelpPageProps> = (props) => {
+const HelpPage: React.FC<HelpPageProps> = () => {
   return <div>HelpPage</div>;
 };
 

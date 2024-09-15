@@ -4,7 +4,7 @@ interface SettingsProps {
   //Props
 }
 
-const Settings: React.FC<SettingsProps> = (props) => {
+const Settings: React.FC<SettingsProps> = () => {
   return <div>Settings</div>;
 };
 
