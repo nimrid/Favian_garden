@@ -16,7 +16,7 @@ export const menuItems: MenuGroup[] = [
       {
         uniqueId: uuidv4(),
         name: "Generate",
-        route: "/",
+        route: "/app/",
         icon: (className) =>
           generateIcon({
             className,
@@ -25,13 +25,13 @@ export const menuItems: MenuGroup[] = [
       {
         uniqueId: uuidv4(),
         name: "My Creations",
-        route: "/my-creations",
+        route: "/app/my-creations",
         icon: (className) => <Folder className={className} />,
       },
       {
         uniqueId: uuidv4(),
         name: "Market",
-        route: "/market",
+        route: "/app/market",
         icon: (className) => <ChartNoAxesCombined className={className} />,
       },
     ],
@@ -42,13 +42,13 @@ export const menuItems: MenuGroup[] = [
       {
         uniqueId: uuidv4(),
         name: "Settings",
-        route: "/settings",
+        route: "/app/settings",
         icon: (className) => <Settings className={className} />,
       },
       {
         uniqueId: uuidv4(),
         name: "Help",
-        route: "/help",
+        route: "/app/help",
         icon: (className) => <CircleHelp className={className} />,
       },
     ],

@@ -7,6 +7,7 @@ import SearchBox from "../_components/search-box";
 import { cn } from "@/lib";
 import MarketPlaceCard from "../_components/marketplace-page/marketplace-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { marketPlaceNFTs } from "@/constant";
 
 const filterOptionsData = [
   {
@@ -28,129 +29,6 @@ const filterOptionsData = [
   {
     label: "Music",
     visible: false,
-  },
-];
-
-const cards = [
-  {
-    id: 1,
-    label: "Dragonfly #501",
-    tag: "Art",
-    price: "47.25 SOL",
-    totalLikes: 432,
-    liked: false,
-    createdBy: "@sadeomoni",
-    image: "/images/marketplace/1.png",
-  },
-  {
-    id: 2,
-    label: "Galactic War #245",
-    tag: "Game",
-    price: "22.43 SOL",
-    totalLikes: 179,
-    liked: true,
-    createdBy: "@charlesuks",
-    image: "/images/marketplace/2.png",
-  },
-  {
-    id: 3,
-    label: "Solara #345",
-    tag: "Art",
-    price: "35.77 SOL",
-    totalLikes: 295,
-    liked: false,
-    createdBy: "@damdam",
-    image: "/images/marketplace/3.png",
-  },
-  {
-    id: 4,
-    label: "Chess Master #109",
-    tag: "Game",
-    price: "50.30 SOL",
-    totalLikes: 512,
-    liked: true,
-    createdBy: "@yusuffsheriff",
-    image: "/images/marketplace/4.png",
-  },
-  {
-    id: 5,
-    label: "Jade #89",
-    tag: "Art",
-    price: "19.55 SOL",
-    totalLikes: 98,
-    liked: true,
-    createdBy: "@constant",
-    image: "/images/marketplace/5.png",
-  },
-  {
-    id: 6,
-    label: "Phoenix #27",
-    tag: "Art",
-    price: "45.20 SOL",
-    totalLikes: 276,
-    liked: false,
-    createdBy: "@charlesuks",
-    image: "/images/marketplace/6.png",
-  },
-  {
-    id: 7,
-    label: "Nebula #704",
-    tag: "Game",
-    price: "33.12 SOL",
-    totalLikes: 341,
-    liked: false,
-    createdBy: "@johnnyart",
-    image: "/images/marketplace/7.png",
-  },
-  {
-    id: 8,
-    label: "Eclipse #102",
-    tag: "Art",
-    price: "27.88 SOL",
-    totalLikes: 217,
-    liked: true,
-    createdBy: "@sadeomoni",
-    image: "/images/marketplace/8.png",
-  },
-  {
-    id: 9,
-    label: "Crimson Claw #190",
-    tag: "Art",
-    price: "41.75 SOL",
-    totalLikes: 523,
-    liked: true,
-    createdBy: "@constant",
-    image: "/images/marketplace/9.png",
-  },
-  {
-    id: 10,
-    label: "Aurora Song #93",
-    tag: "Music",
-    price: "36.50 SOL",
-    totalLikes: 308,
-    liked: false,
-    createdBy: "@damdam",
-    image: "/images/marketplace/7.png",
-  },
-  {
-    id: 11,
-    label: "Cosmic Dance #12",
-    tag: "Art",
-    price: "16.33 SOL",
-    totalLikes: 184,
-    liked: true,
-    createdBy: "@yusuffsheriff",
-    image: "/images/marketplace/8.png",
-  },
-  {
-    id: 12,
-    label: "Solar Flare #56",
-    tag: "Art",
-    price: "39.99 SOL",
-    totalLikes: 432,
-    liked: false,
-    createdBy: "@charlesuks",
-    image: "/images/marketplace/9.png",
   },
 ];
 
@@ -251,7 +129,8 @@ const MarketPage: React.FC = () => {
 
         {/* Cards Section */}
         <section className="grid grid-cols-12 gap-5 mt-8">
-          {cards?.map((c) => (
+          {/* TODO: API Implementation */}
+          {marketPlaceNFTs?.map((c) => (
             <MarketPlaceCard
               className={cn("col-span-4")}
               key={c.id}

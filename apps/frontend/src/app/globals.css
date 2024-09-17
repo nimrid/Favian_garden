@@ -102,3 +102,9 @@
   box-shadow: 5px 5px 10px 0px #ffffff1a inset;
   box-shadow: -5px -5px 10px 0px #ffffff1a inset;
 }
+
+.gradient-text {
+  background: linear-gradient(to top, green 10%, red 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
