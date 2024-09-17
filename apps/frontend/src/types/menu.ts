@@ -14,9 +14,9 @@ export type MenuItem = {
 };
 
 export enum Routes {
-  Generate = "/",
-  MyCreations = "/my-creations",
-  Market = "/market",
-  Settings = "/settings",
-  Help = "/help",
+  Generate = "/app/",
+  MyCreations = "/app/my-creations",
+  Market = "/app/market",
+  Settings = "/app/settings",
+  Help = "/app/help",
 }

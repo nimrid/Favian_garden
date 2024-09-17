@@ -21,6 +21,7 @@ import { usePathname } from "next/navigation";
 import { Routes } from "@/types";
 import TopSellersCard from "./top-sellers-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { topSellers } from "@/constant";
 
 type GenerateHistory = {
   title: string;
@@ -95,22 +96,16 @@ export const SideBarComponent = () => {
               </div>
 
               <div className="flex flex-col gap-3">
-                {new Array(6)
-                  .fill({
-                    avatar: "",
-                    label: "Jane Janet",
-                    handle: "@janeJanet",
-                  })
-                  ?.map((u, idx) => {
-                    return (
-                      <TopSellersCard
-                        key={idx}
-                        avatar={u?.avatar}
-                        label={u?.label}
-                        handle={u?.handle}
-                      />
-                    );
-                  })}
+                {topSellers?.map((u, idx) => {
+                  return (
+                    <TopSellersCard
+                      key={idx}
+                      avatar={u?.avatar}
+                      label={u?.name}
+                      handle={u?.handle}
+                    />
+                  );
+                })}
               </div>
             </div>
           </>
