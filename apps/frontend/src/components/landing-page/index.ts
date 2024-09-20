@@ -6,3 +6,4 @@ export * from "./hero";
 export * from "./recent";
 export * from "./top-nft";
 export * from "./top-seller";
+export * from "./mobile-menu";

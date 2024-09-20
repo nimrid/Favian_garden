@@ -13,17 +13,6 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-// const geistSans = localFont({
-//   src: "./fonts/GeistVF.woff",
-//   variable: "--font-geist-sans",
-//   weight: "100 900",
-// });
-// const geistMono = localFont({
-//   src: "./fonts/GeistMonoVF.woff",
-//   variable: "--font-geist-mono",
-//   weight: "100 900",
-// });
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -37,9 +26,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isDevMode = process.env.NODE_ENV !== "production";
+
   return (
     <html lang="en">
-      <body className={cn(inter.className, `antialiased`)}>
+      <body
+        className={cn(
+          inter.className,
+          `antialiased`,
+          isDevMode && "debug-screens"
+        )}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

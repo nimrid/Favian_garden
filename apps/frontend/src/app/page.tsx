@@ -1,9 +1,14 @@
+"use client";
+
+import * as React from "react";
+
 import {
   FeatureSection,
   Footer,
   FooterTopSection,
   Header,
   HeroSection,
+  MobileMenu,
   RecentlyAddedNftsSection,
   TopNFTSection,
   TopSellerSection,
@@ -11,34 +16,42 @@ import {
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { navItems } from "@/constant/constant";
+import { useAppStore } from "@/store";
 
 const LandingPage = () => {
+  const { showMobileMenu } = useAppStore();
+
   return (
     <main>
       <ScrollArea className="w-screen h-screen">
         {/* Header | Navigation Bar Section */}
-        <Header navItems={navItems} />
+        <MobileMenu navItems={navItems} />
 
-        {/* Hero Section */}
-        <HeroSection />
+        {!showMobileMenu && (
+          <>
+            <Header navItems={navItems} />
+            {/* Hero Section */}
+            <HeroSection />
 
-        {/* Feature Section */}
-        <FeatureSection />
+            {/* Feature Section */}
+            <FeatureSection />
 
-        {/* Top NFT Section */}
-        <TopNFTSection />
+            {/* Top NFT Section */}
+            <TopNFTSection />
 
-        {/* Top Seller */}
-        <TopSellerSection />
+            {/* Top Seller */}
+            <TopSellerSection />
 
-        {/* Recently Added NFTs */}
-        <RecentlyAddedNftsSection />
+            {/* Recently Added NFTs */}
+            <RecentlyAddedNftsSection />
 
-        {/* Footer Top */}
-        <FooterTopSection />
+            {/* Footer Top */}
+            <FooterTopSection />
 
-        {/* Footer */}
-        <Footer />
+            {/* Footer */}
+            <Footer />
+          </>
+        )}
       </ScrollArea>
     </main>
   );

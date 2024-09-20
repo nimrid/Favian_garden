@@ -12,7 +12,7 @@ export const Header: React.FC<HeaderProps> = ({ navItems = [], ...props }) => {
   return (
     <nav
       {...props}
-      className="container mx-auto max-w-7xl flex items-center justify-between"
+      className="hidden md:flex container xl:mx-auto max-w-7xl items-center justify-between px-5 xl:px-0"
     >
       {/* Brand Logo */}
       <Image src={"/logo.svg"} alt="logo" width={100} height={100} />
