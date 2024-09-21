@@ -8,11 +8,11 @@ export const HeroSection = () => {
   return (
     <section className="container mx-auto max-w-7xl">
       {/* First Line */}
-      <div className="grid grid-cols-12 gap-10 mt-6 mx-1 md:mx-10 xl:mx-0">
+      <div className="flex sm:grid sm:grid-cols-12 sm:gap-10 mt-6 mx-1 md:mx-10 xl:mx-0">
         {/* Left */}
         <div
           className={cn(
-            "col-span-full px-5 text-center md:px-0 md:col-span-6 h-full flex items-center flex-col justify-center md:text-start"
+            "col-span-full w-full px-5 text-center md:px-0 md:col-span-6 h-full flex items-center flex-col justify-center md:text-start"
           )}
         >
           <div>
@@ -53,7 +53,9 @@ export const HeroSection = () => {
 
       {/* Second Line */}
       <div
-        className={cn("grid grid-cols-12 gap-10 mt-32 mx-1 xl:mx-0 md:mx-10")}
+        className={cn(
+          "flex flex-col sm:grid sm:grid-cols-12 gap-10 mt-32 mx-1 xl:mx-0 md:mx-10"
+        )}
       >
         <div className="col-span-full md:col-span-6 xl:col-span-5">
           <AspectRatio
