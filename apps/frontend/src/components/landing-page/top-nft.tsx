@@ -9,7 +9,8 @@ export const TopNFTSection = () => {
       <h3 className="text-xl sm:text-2xl md:text-3xl font-[600] px-5 lg:px-10 xl:px-0">
         Today’s top NFT
       </h3>
-      <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-12 mt-5 sm:mt-8 px-5 lg:px-10 xl:px-0">
+
+      <div className="grid xs:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-12 mt-5 sm:mt-8 px-5 lg:px-10 xl:px-0">
         {marketPlaceNFTs
           ?.slice(0, 8)
           ?.map((c) => (

@@ -24,7 +24,30 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, ...props }) => {
       {...props}
       className={cn("w-screen h-screen", isDevMode && "debug-screens")}
     >
-      <ResizablePanelGroup direction="horizontal">
+      {/* Desktop | Tablet */}
+      <ResizablePanelGroup direction="horizontal" className="hidden md:flex">
+        {/* Side Bar Menu */}
+        <ResizablePanel defaultSize={17} minSize={17} maxSize={20}>
+          <MenuBarComponent />
+        </ResizablePanel>
+
+        {/* First Handle */}
+        <ResizableHandle />
+
+        {/* Body */}
+        <ResizablePanel defaultSize={63}>{children}</ResizablePanel>
+
+        {/* Second Handle */}
+        <ResizableHandle />
+
+        {/* Right Side Bar */}
+        <ResizablePanel defaultSize={20} minSize={20} maxSize={20}>
+          <SideBarComponent />
+        </ResizablePanel>
+      </ResizablePanelGroup>
+
+      {/* Mobile | Extra Large Mobile Screens | Extra Small Mobile Screens */}
+      <ResizablePanelGroup direction="horizontal" className="hidden md:flex">
         {/* Side Bar Menu */}
         <ResizablePanel defaultSize={17} minSize={17} maxSize={20}>
           <MenuBarComponent />
