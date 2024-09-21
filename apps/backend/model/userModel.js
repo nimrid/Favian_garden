@@ -23,8 +23,9 @@ const userSchema = new mongoose.Schema(
     credit: {
       type: String,
       trim: true,
+      default: 3,
     },
-    post: [
+    posts: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Post",
