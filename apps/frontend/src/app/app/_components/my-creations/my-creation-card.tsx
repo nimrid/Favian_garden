@@ -24,12 +24,12 @@ export const MyCreationCard: React.FC<MyCreationCardProps> = ({
         {nftType}
       </Badge>
       <div className="min-w-full min-h-[12rem]">
-        <AspectRatio ratio={1 / 1}>
+        <AspectRatio ratio={1 / 1} className="flex items-center justify-center">
           <Image src={imageUrl} alt={label} width={238} height={193} />
         </AspectRatio>
       </div>
 
-      <div className="mt-10 mb-3 flex justify-between items-center font-[700] text-base">
+      <div className="lg:mt-10 mb-3 flex justify-between items-center font-[700] text-base">
         <h3 className="text-muted-foreground">{label}</h3>
         <h5>{price}</h5>
       </div>

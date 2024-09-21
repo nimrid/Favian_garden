@@ -34,7 +34,7 @@ type MintFormProps = {
 };
 
 const MintForm: React.FC<MintFormProps> = ({ onClick = () => {} }) => {
-  const [step, setStep] = React.useState(2);
+  const [step, setStep] = React.useState(1);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

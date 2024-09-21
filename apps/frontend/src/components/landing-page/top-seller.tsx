@@ -8,13 +8,13 @@ import Link from "next/link";
 
 export const TopSellerSection = () => {
   return (
-    <section className="container mx-auto max-w-7xl mb-32">
-      <h3 className="text-3xl font-[600] px-5 lg:px-10 xl:px-0">
+    <section className="container mx-auto max-w-7xl mb-16 sm:mb-32">
+      <h3 className="text-xl sm:text-2xl md:text-3xl font-[600] px-5 lg:px-10 xl:px-0">
         Our Top sellers
       </h3>
 
       <div className="w-full flex flex-col xl:flex-row items-center gap-10 px-5 lg:px-10 xl:px-0">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:col-span-4 xl:grid-cols-5 w-full h-fit xl:w-[97%] xl:gap-16 mt-8">
+        <div className="grid grid-cols-2 gap-5 sm:gap-0 md:grid-cols-3 lg:col-span-4 xl:grid-cols-5 w-full h-fit xl:w-[97%] xl:gap-16 mt-4 sm:mt-8">
           {topSellers?.map((s) => (
             <div key={s.handle}>
               <AspectRatio
@@ -28,8 +28,10 @@ export const TopSellerSection = () => {
                     width={201}
                     height={167}
                   />
-                  <h4 className="my-3 text-xl text-center">{s.name}</h4>
-                  <p className="text-center">
+                  <h4 className="my-3 text-base sm:text-lg md:text-xl text-center">
+                    {s.name}
+                  </h4>
+                  <p className="text-sm sm:text-base text-center">
                     {s.currencySymbol}
                     {s.earning}
                   </p>

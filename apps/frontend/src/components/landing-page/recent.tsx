@@ -7,11 +7,12 @@ import { Button } from "../ui/button";
 export const RecentlyAddedNftsSection = () => {
   return (
     <section className="container mx-auto max-w-7xl mb-16 xl:mb-32">
-      <h3 className="text-3xl font-[600] px-5 lg:px-10 xl:px-0">
+      <h3 className="text-xl sm:text-2xl md:text-3xl font-[600] px-5 lg:px-10 xl:px-0">
         Recently added
       </h3>
+
       <div className="w-full flex flex-col xl:flex-row items-center gap-10 px-5 lg:px-10 xl:px-0">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4  gap-5 xl:gap-16 mt-8 w-fit">
+        <div className="grid xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 xl:gap-16 sm:mt-8 mt-5 w-full xs:w-fit">
           {marketPlaceNFTs
             ?.slice(0, 4)
             ?.map((c) => (
