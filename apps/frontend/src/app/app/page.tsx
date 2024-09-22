@@ -35,7 +35,6 @@ import {
 } from "@/components/ui/tooltip";
 import Image from "next/image";
 import MintForm from "./_components/generate-page/mint-form";
-
 const buttonLabels = [
   "Anime",
   "3D art",

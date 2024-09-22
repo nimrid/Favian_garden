@@ -13,8 +13,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib";
 import { TooltipProvider } from "@/components/ui/tooltip";
 const inter = Inter({ subsets: ["latin"] });
-
-
+import AppWalletProvider from "./components/AppWalletProvider";
 export const metadata: Metadata = {
   title: "Favian Garden",
   description:
@@ -37,7 +36,7 @@ export default function RootLayout({
           isDevMode && "debug-screens"
         )}
       >
-      
+      <AppWalletProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
@@ -45,8 +44,9 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TooltipProvider>{children}</TooltipProvider>
+           
           </ThemeProvider>
-        
+          </AppWalletProvider>
       </body>
     </html>
   );

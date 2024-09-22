@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import Image from "next/image";
 import { AspectRatio } from "../ui/aspect-ratio";
 import { cn } from "@/lib";
-
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 export const HeroSection = () => {
   return (
     <section className="container mx-auto max-w-7xl">
@@ -28,9 +28,7 @@ export const HeroSection = () => {
               <Button variant={"primary"} size={"sm"}>
                 Get Started
               </Button>
-              <Button variant={"outline"} size={"sm"}>
-                Connect wallet
-              </Button>
+              <WalletMultiButton></WalletMultiButton>
             </div>
           </div>
         </div>
