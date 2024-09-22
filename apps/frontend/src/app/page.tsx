@@ -22,6 +22,7 @@ const LandingPage = () => {
   const { showMobileMenu } = useAppStore();
 
   return (
+    
     <main>
       <ScrollArea className="w-screen h-screen">
         {/* Header | Navigation Bar Section */}

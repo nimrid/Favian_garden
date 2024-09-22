@@ -3,7 +3,7 @@ import { NavItem } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-
+import WalletConnector from "@/context/WalletConnector";
 interface HeaderProps {
   navItems: NavItem[];
 }
@@ -30,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({ navItems = [], ...props }) => {
         </div>
 
         {/* Buttons */}
-        <Button variant={"primary"}>Add Wallet</Button>
+       <WalletConnector />
       </div>
     </nav>
   );
