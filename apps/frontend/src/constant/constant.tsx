@@ -1,4 +1,43 @@
 import { Feature, NavItem } from "@/types";
+import { v4 as uuidv4 } from "uuid";
+
+/**
+ * Type of NFTs
+ */
+
+type ITypeOfNFTs = {
+  id: string;
+  url: string;
+  label: string;
+};
+
+export const typeOfNFTs: ITypeOfNFTs[] = [
+  {
+    id: uuidv4(),
+    url: "/images/metaverse_land.png",
+    label: "Metaverse Land",
+  },
+  {
+    id: uuidv4(),
+    url: "/images/utility.png",
+    label: "Utility",
+  },
+  {
+    id: uuidv4(),
+    url: "/images/game.png",
+    label: "Game",
+  },
+  {
+    id: uuidv4(),
+    url: "/images/art.png",
+    label: "Art",
+  },
+  {
+    id: uuidv4(),
+    url: "/images/music.png",
+    label: "Music",
+  },
+];
 
 /**
  * Dummy Data
@@ -221,3 +260,29 @@ export const features: Feature[] = [
     description: "Upload your new NFTs for sale at the market place",
   },
 ];
+
+export const screens = {
+  xxxs: 320,
+  xxs: 375,
+  xs: 425,
+  sm: 640,
+  md: 768,
+  lg: 1024,
+  xl: 1280,
+  "2xl": 1536,
+  "3xl": 1920,
+  "4xl": 2560,
+};
+
+export enum ESCREENS {
+  XXXS = "xxxs",
+  XXS = "xxs",
+  XS = "xs",
+  SM = "sm",
+  MD = "md",
+  LG = "lg",
+  XL = "xl",
+  "2XL" = "2xl",
+  "3XL" = "3xl",
+  "4XL" = "4xl",
+}

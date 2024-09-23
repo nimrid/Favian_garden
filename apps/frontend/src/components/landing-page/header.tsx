@@ -2,17 +2,15 @@ import { Button } from "@/components/ui/button";
 import { NavItem } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
-import { useWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import React from 'react';
+import React from "react";
+// import WalletConnector from "@/context/WalletConnector";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 interface HeaderProps {
   navItems: NavItem[];
 }
 
 export const Header: React.FC<HeaderProps> = ({ navItems = [], ...props }) => {
-  const { publicKey } = useWallet(); // Get wallet address from Solana Wallet Adapter
-
   return (
     <nav
       {...props}
@@ -33,13 +31,14 @@ export const Header: React.FC<HeaderProps> = ({ navItems = [], ...props }) => {
           ))}
         </div>
 
-        {/* Wallet Connect */}
-        <WalletMultiButton /> {/* Button to connect wallet */}
-        {/* {publicKey && (
-          <p className="text-sm font-medium">
-            Wallet Address: {publicKey.toString()}
-          </p>
-        )} */}
+        {/* Buttons */}
+
+        <WalletMultiButton
+          style={{
+            height: "2.5rem",
+            width: "100%",
+          }}
+        />
       </div>
     </nav>
   );
