@@ -8,17 +8,11 @@ const cors = require("cors");
 // const next = require("next");
 dotenv.config({ path: "./config.env" });
 const dev = process.env.NODE_ENV != "production";
-// const nextServer = next({ dev });
-// const handle = nextServer.getRequestHandler();
 
-const authRoute = require("./routes/authRoute");
-const userRoute = require("./routes/userRoute");
-const postRoute = require("./routes/postRoute");
 const imageRoutes = require("./routes/imageRoute");
+
 const path = require("path");
 const { errorHandler } = require("./middlewares/error");
-
-const verifyToken = require("./middlewares/verifyToken");
 
 const port = process.env.PORT || 3000;
 
@@ -31,9 +25,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("./uploads", express.static(path.join(__dirname, "uploads")));
-app.use("/api/auth", authRoute);
-app.use("/api/post", postRoute);
-app.use("/api/user", verifyToken, userRoute);
+
 app.use(errorHandler);
 
 // Use image generation routes
