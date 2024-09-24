@@ -118,7 +118,7 @@ This API allows users to generate images based on a text prompt using the Stabil
 ## **Base URL**
 
 ```
-http://localhost:5000/api
+http://localhost:3000/api
 ```
 
 ## **Endpoints**
@@ -271,5 +271,3 @@ For questions or support regarding the Image Generation API, contact the develop
 - **GitHub**: [YourGitHubProfile]
 
 ---
-
-This documentation provides all necessary details for developers to use the API effectively and troubleshoot any issues that may arise during usage.
