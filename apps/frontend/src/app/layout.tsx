@@ -25,18 +25,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isDevMode = process.env.NODE_ENV !== "production";
+  // const isDevMode = process.env.NODE_ENV !== "production";
 
   return (
     <html lang="en">
-      <body
-        className={cn(
-          inter.className,
-          `antialiased`,
-          isDevMode && "debug-screens"
-        )}
-      >
-      <AppWalletProvider>
+      <body className={cn(inter.className, `antialiased`)}>
+        <AppWalletProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="dark"
@@ -44,13 +38,9 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TooltipProvider>{children}</TooltipProvider>
-           
           </ThemeProvider>
-          </AppWalletProvider>
+        </AppWalletProvider>
       </body>
     </html>
   );
 }
-
-
-

@@ -28,7 +28,14 @@ export const HeroSection = () => {
               <Button variant={"primary"} size={"sm"}>
                 Get Started
               </Button>
-              <WalletMultiButton></WalletMultiButton>
+
+              <WalletMultiButton
+                style={{
+                  height: "2.5rem",
+                  width: "10rem",
+                  borderRadius: "0.5rem",
+                }}
+              />
             </div>
           </div>
         </div>
