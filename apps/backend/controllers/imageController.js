@@ -37,6 +37,7 @@ exports.generateImage = async (req, res) => {
   const payload = {
     prompt,
     output_format: "jpeg",
+    model: "SD3 Medium",
     width: parseInt(imageSize.split("x")[0]), // width based on the canvas size
     height: parseInt(imageSize.split("x")[1]), // height based on the canvas size
   };
@@ -56,7 +57,8 @@ exports.generateImage = async (req, res) => {
 
     if (response.status === 200) {
       res.setHeader("Content-Type", "image/jpeg");
-      return res.status(200).send(Buffer.from(response.data));
+      // TODO: Buffer.from(response.data)
+      return res.status(200).send(response.data);
     } else {
       return res.status(response.status).json({
         message: `Error generating image: ${response.status}`,
