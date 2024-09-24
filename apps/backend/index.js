@@ -10,11 +10,11 @@ dotenv.config({ path: "./config.env" });
 const dev = process.env.NODE_ENV != "production";
 
 const imageRoutes = require("./routes/imageRoute");
-
+const nftRoutes = require("./routes/nftsRoute");
 const path = require("path");
 const { errorHandler } = require("./middlewares/error");
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 mongoose
   .connect(process.env.MONGODB_URL)
@@ -30,11 +30,7 @@ app.use(errorHandler);
 
 // Use image generation routes
 app.use("/api", imageRoutes);
-// nextServer.prepare().then(() => {
-//   app.get("*", (req, res) => {
-//     return handle(req, res);
-//   });
-// });
+app.use("/api", nftRoutes); // Expose the NFT route
 
 app.listen(port, () => {
   console.log(`App running on port ${port}`);

@@ -8,6 +8,7 @@ import { cn } from "@/lib";
 import MarketPlaceCard from "../_components/marketplace-page/marketplace-card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { marketPlaceNFTs } from "@/constant";
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 
 const filterOptionsData = [
   {
@@ -74,12 +75,13 @@ const MarketPage: React.FC = () => {
               setSearch(value);
             }}
           />
-          <div className="flex items-center justify-center flex-col space-y-1">
+          <WalletMultiButton/>
+          {/* <div className="flex items-center justify-center flex-col space-y-1">
             <Button variant={"ghost"} size={"icon"} className="bg-accent-muted">
               <Plus className="w-5 h-5" />
             </Button>
             <p className="text-xs">Add Wallet</p>
-          </div>
+          </div> */}
         </section>
 
         {/* Filter Section */}
