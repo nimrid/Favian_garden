@@ -45,10 +45,10 @@ Make sure you have the following installed on your machine:
 4. Create a `.env` file in the root of the `backend` folder and add the necessary environment variables:
 
    ```bash
-   PORT=3000
-   MONGO_URI=your-mongodb-uri
-   JWT_SECRET=your-jwt-secret
+   cp .env.example .env
    ```
+
+   Put your `STABILITY_API_KEY` key
 
 ### Running the server
 
