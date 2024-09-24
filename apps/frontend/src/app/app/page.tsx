@@ -38,6 +38,7 @@ import Image from "next/image";
 import MintForm from "./_components/generate-page/mint-form";
 import { typeOfNFTs } from "@/constant";
 import { config } from "@/config";
+import { useToast } from "@/hooks/use-toast";
 const buttonLabels = [
   "Anime",
   "3D art",
@@ -69,6 +70,12 @@ export default function HomePage() {
     ...initialFormData,
   });
   const [mintBtnClicked, setMintBtnClicked] = React.useState(false);
+  const [generatedImage, setGeneratedImage] = React.useState<string | null>(
+    null
+  );
+
+  // Toast
+  const { toast } = useToast();
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setFormData((prev) => ({
@@ -86,14 +93,53 @@ export default function HomePage() {
         type: formData.typeOfNFT,
       };
 
-      const response = await axios.post(
-        `${config.BASE_BACKEND_URL}/generate`,
-        payload
-      );
+      if (!payload.text) {
+        toast({
+          title: "⚠⚠⚠⚠⚠⚠ Error ⚠⚠⚠⚠⚠⚠",
+          description: "Please enter a text to generate an image.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (!payload.style) {
+        toast({
+          title: "⚠⚠⚠⚠⚠⚠ Error ⚠⚠⚠⚠⚠⚠",
+          description: "Please select a style to generate an image.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (!payload.canvas) {
+        toast({
+          title: "⚠⚠⚠⚠⚠⚠ Error ⚠⚠⚠⚠⚠⚠",
+          description: "Please select a canvas to generate an image.",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (!payload.type) {
+        toast({
+          title: "⚠⚠⚠⚠⚠⚠ Error ⚠⚠⚠⚠⚠⚠",
+          description: "Please select a type of NFT to generate an image.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const response = await axios.post(`${config.GENERATE_IMAGE}`, payload);
 
       if (response.status === 200) {
+        setGeneratedImage(response.data);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error generating image:", error);
+      if (error instanceof Error) {
+        toast({
+          title: "Error Generating Image",
+          description: error.message,
+        });
+      }
+    }
   };
 
   return (
@@ -320,7 +366,7 @@ export default function HomePage() {
                 <DialogHeader>
                   <div className="flex flex-col lg:flex-row space-x-5 items-center">
                     <Image
-                      src={"/images/dialog-nft.png"}
+                      src={generatedImage ?? "/images/dialog-nft.png"}
                       alt="NFT Dialog Image"
                       width={280}
                       height={312}
@@ -350,7 +396,11 @@ export default function HomePage() {
                             </p>
                           </DialogDescription>
                           <DialogFooter className="mt-3">
-                            <Button variant={"link"} className="text-blue-500">
+                            <Button
+                              variant={"link"}
+                              className="text-blue-500"
+                              onClick={handleGenerateImage}
+                            >
                               Generate another response
                             </Button>
                           </DialogFooter>

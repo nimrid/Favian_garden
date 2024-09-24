@@ -8,12 +8,14 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 // import localFont from "next/font/local";
 
-import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { cn } from "@/lib";
+import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-const inter = Inter({ subsets: ["latin"] });
+import { cn } from "@/lib";
 import AppWalletProvider from "./components/AppWalletProvider";
+import "./globals.css";
+const inter = Inter({ subsets: ["latin"] });
+
 export const metadata: Metadata = {
   title: "Favian Garden",
   description:
@@ -25,11 +27,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const isDevMode = process.env.NODE_ENV !== "production";
+  const isDevMode = process.env.NODE_ENV !== "production";
 
   return (
     <html lang="en">
-      <body className={cn(inter.className, `antialiased`)}>
+      <body
+        className={cn(
+          inter.className,
+          `antialiased`,
+          isDevMode && "debug-screens"
+        )}
+      >
         <AppWalletProvider>
           <ThemeProvider
             attribute="class"
@@ -38,6 +46,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TooltipProvider>{children}</TooltipProvider>
+            <Toaster />
           </ThemeProvider>
         </AppWalletProvider>
       </body>
