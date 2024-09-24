@@ -9,7 +9,7 @@ const {
 const router = express.Router();
 
 // POST route to generate image
-router.post("/generate-image", generateImage);
+router.post("/generate", generateImage);
 
 // Endpoint to  save an image
 router.post("/save-image", saveImage);
