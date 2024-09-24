@@ -2,7 +2,7 @@
 const { config } = require("../config");
 const axios = require("axios");
 
-const generateImage = async (req, res) => {
+exports.generateImage = async (req, res) => {
   const { text, typeOfNFT, style, canvas } = req.body;
 
   if (!text || !style || !canvas) {
