@@ -2,6 +2,7 @@
 
 import { Download, Plus, RotateCw, WandSparkles } from "lucide-react";
 import * as React from "react";
+import axios from "axios";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -35,6 +36,8 @@ import {
 } from "@/components/ui/tooltip";
 import Image from "next/image";
 import MintForm from "./_components/generate-page/mint-form";
+import { typeOfNFTs } from "@/constant";
+import { config } from "@/config";
 const buttonLabels = [
   "Anime",
   "3D art",
@@ -47,20 +50,58 @@ const buttonLabels = [
   "Collages",
 ];
 
+type IInitialFromData = {
+  text: string;
+  typeOfNFT: string;
+  style: string;
+  canvas: string;
+};
+
+const initialFormData: IInitialFromData = {
+  text: "",
+  typeOfNFT: "",
+  style: "",
+  canvas: "",
+};
+
 export default function HomePage() {
-  const [text, setText] = React.useState("");
+  const [formData, setFormData] = React.useState<IInitialFromData>({
+    ...initialFormData,
+  });
   const [mintBtnClicked, setMintBtnClicked] = React.useState(false);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value);
+    setFormData((prev) => ({
+      ...prev,
+      text: e.target.value,
+    }));
+  };
+
+  const handleGenerateImage = async () => {
+    try {
+      const payload = {
+        text: formData.text,
+        style: formData.style,
+        canvas: formData.canvas,
+        type: formData.typeOfNFT,
+      };
+
+      const response = await axios.post(
+        `${config.BASE_BACKEND_URL}/generate`,
+        payload
+      );
+
+      if (response.status === 200) {
+      }
+    } catch (error) {}
   };
 
   return (
     <ScrollArea className="container max-w-7xl mx-auto w-full h-screen">
       <main className="p-6 xl:p-12 mb-16 lg:mb-0">
         {/* Top Section */}
-        <section className="flex w-full items-center justify-between lg:justify-end">
-          <div className="bg-slate-700 p-1 rounded-full">
+        <section className="flex w-full items-center justify-between md:justify-end">
+          <div className="bg-slate-700 p-1 rounded-full md:hidden">
             <Avatar>
               <AvatarImage src="https://github.com/shadcn.png" />
               <AvatarFallback>CN</AvatarFallback>
@@ -89,7 +130,7 @@ export default function HomePage() {
               className="textarea-gradient bg-transparent text-white placeholder-gray-400 p-4 w-full h-40 rounded-lg border border-green-500/40 shadow-lg text-sm focus:ring-2 focus:ring-green-500 lg:text-lg text-white/80 placeholder:text-sm lg:placeholder:text-base"
               placeholder="Enter your Prompt..."
               maxLength={200}
-              value={text} // Bind the value to the textarea
+              value={formData.text} // Bind the value to the textarea
               onChange={handleTextChange} // Update state on text change
             />
             <div className="flex items-center justify-between mt-1">
@@ -97,12 +138,12 @@ export default function HomePage() {
                 <RotateCw className="h-4 w-4 lg:w-6 lg:h-6 text-green-500" />
               </Button>
               <p className="text-end mt-1 text-sm text-muted-foreground">
-                {text.length}/200
+                {formData.text.length}/200
               </p>
             </div>
 
             {/* Inspire me button */}
-            {text.length <= 100 && (
+            {formData.text.length <= 100 && (
               <Button
                 variant={"outline"}
                 className="absolute left-3 bottom-14 rounded-xl border-green-500 transition-opacity duration-200 opacity-100"
@@ -124,31 +165,47 @@ export default function HomePage() {
             className="text-center lg:text-start"
           />
           <div className="flex flex-wrap gap-3 items-center justify-evenly lg:justify-between">
-            <ImageContainer
-              url={"/images/metaverse_land.png"}
-              label="Metaverse land"
-            />
-            <ImageContainer url={"/images/utility.png"} label="Utility" />
-            <ImageContainer url={"/images/game.png"} label="Game" />
-            <ImageContainer url={"/images/art.png"} label="Art" />
-            <ImageContainer url={"/images/music.png"} label="Music" />
+            {typeOfNFTs.map((t) => (
+              <ImageContainer
+                key={t.id}
+                url={t.url}
+                label={t.label}
+                selected={t.label === formData.typeOfNFT}
+                onClick={() =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    typeOfNFT: t.label,
+                  }))
+                }
+              />
+            ))}
           </div>
         </section>
 
         {/* Style Design */}
-        <section className="flex flex-col space-y-6 mt-6">
+        <section className="flex flex-col space-y-6 mt-12">
           <PageTitle
             label="Choose style design"
             as="h2"
             className="text-center lg:text-start"
           />
-          <div className="flex flex-wrap gap-5 items-center justify-evenly">
+          <div className="flex flex-wrap gap-5 items-center justify-evenly xl:justify-start">
             {buttonLabels.map((label) => (
               <Button
                 key={label}
                 variant={"outline"}
                 size={"lg"}
-                className={cn("rounded-xl border-green-500/50 min-w-36")}
+                className={cn(
+                  "rounded-xl border-green-500/50 min-w-36",
+                  label === formData.style &&
+                    "bg-green-500 hover:bg-green-500/80"
+                )}
+                onClick={() => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    style: label,
+                  }));
+                }}
               >
                 {label}
               </Button>
@@ -157,7 +214,7 @@ export default function HomePage() {
         </section>
 
         {/* Canvas */}
-        <section className="flex flex-col space-y-6 mt-6">
+        <section className="flex flex-col space-y-6 mt-10">
           <PageTitle
             label="Choose canvas"
             as="h2"
@@ -166,9 +223,18 @@ export default function HomePage() {
           <div className="flex flex-col lg:flex-row justify-between w-full h-fit items-baseline">
             <div className="flex flex-wrap w-full gap-5 items-center justify-evenly lg:justify-start lg:items-end">
               <Button
-                className={cn("bg-muted-2 w-[4rem] h-[4rem]")}
+                className={cn(
+                  "bg-muted-2 w-[4rem] h-[4rem]",
+                  formData.canvas === "Custom" && "ring-4 ring-green-500"
+                )}
                 variant={"ghost"}
                 size={"icon"}
+                onClick={() => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    canvas: "Custom",
+                  }));
+                }}
               >
                 <div className="flex w-full h-full items-center justify-center flex-col">
                   <Plus className="w-5 h-5" />
@@ -176,9 +242,19 @@ export default function HomePage() {
                 </div>
               </Button>
               <Button
-                className={cn("bg-muted-2 w-[4rem] h-[4rem]")}
+                className={cn(
+                  "bg-muted-2 w-[4rem] h-[4rem]",
+
+                  formData.canvas === "Square" && "ring-4 ring-green-500"
+                )}
                 variant={"ghost"}
                 size={"icon"}
+                onClick={() => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    canvas: "Square",
+                  }));
+                }}
               >
                 <div className="flex items-center w-full h-full justify-center flex-col">
                   {squareIcon("w-4 h-4")}
@@ -186,23 +262,41 @@ export default function HomePage() {
                 </div>
               </Button>
               <Button
-                className={cn("bg-muted-2 w-[4rem] h-[5rem]")}
+                className={cn(
+                  "bg-muted-2 w-[4rem] h-[5rem]",
+                  formData.canvas === "Portrait" && "ring-4 ring-green-500"
+                )}
                 variant={"ghost"}
                 size={"icon"}
+                onClick={() => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    canvas: "Portrait",
+                  }));
+                }}
               >
                 <div className="flex items-center w-full h-full justify-center flex-col">
                   {portraitIcon("w-5 h-5")}
-                  <span className="text-[9px]">Square</span>
+                  <span className="text-[9px]">Portrait</span>
                 </div>
               </Button>
               <Button
-                className={cn("bg-muted-2 w-[5rem] h-[4rem]")}
+                className={cn(
+                  "bg-muted-2 w-[5rem] h-[4rem]",
+                  formData.canvas === "Landscape" && "ring-4 ring-green-500"
+                )}
                 variant={"ghost"}
                 size={"icon"}
+                onClick={() => {
+                  setFormData((prev) => ({
+                    ...prev,
+                    canvas: "Landscape",
+                  }));
+                }}
               >
                 <div className="flex items-center w-full h-full justify-center flex-col">
                   {landscapeIcon("w-5 h-5")}
-                  <span className="text-[9px]">Square</span>
+                  <span className="text-[9px]">Landscape</span>
                 </div>
               </Button>
             </div>
@@ -213,6 +307,7 @@ export default function HomePage() {
                   className={cn(
                     "min-w-full mt-6 lg:mt-0 lg:min-w-[30rem] bg-accent-1 hover:bg-accent-1/80"
                   )}
+                  onClick={handleGenerateImage}
                 >
                   <div className="flex space-x-3 items-center">
                     <WandSparkles className="w-5 h-5" />
