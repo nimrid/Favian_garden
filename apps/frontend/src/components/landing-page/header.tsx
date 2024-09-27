@@ -2,15 +2,46 @@ import { Button } from "@/components/ui/button";
 import { NavItem } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, {useEffect} from "react";
 // import WalletConnector from "@/context/WalletConnector";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 interface HeaderProps {
   navItems: NavItem[];
 }
 
 export const Header: React.FC<HeaderProps> = ({ navItems = [], ...props }) => {
+  const { publicKey } = useWallet();
+
+  useEffect(() => {
+    const sendWalletAddress = async () => {
+      if (publicKey) {
+        const walletAddress = publicKey.toString();
+        console.log("Connected Wallet Address:", walletAddress);
+
+        try {
+          // Send the wallet address to the backend to store in the session or token
+          const response = await fetch('http://localhost:3000/api/v1/wallet/connect', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ walletAddress }),
+          });
+          const result = await response.json();
+          console.log(result);
+          if (!response.ok) {
+            throw new Error('Failed to send wallet address');
+          }
+
+          console.log('Wallet address sent to the backend successfully.');
+        } catch (error) {
+          console.error('Error sending wallet address:',);
+        }
+      }
+    };
+
+    sendWalletAddress();
+  }, [publicKey]);  // Run the effect only when publicKey changes (when the wallet connects)
   return (
     <nav
       {...props}

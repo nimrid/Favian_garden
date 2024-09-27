@@ -125,6 +125,8 @@ export default function HomePage() {
         });
         return;
       }
+      console.log("API URL:", config.GENERATE_IMAGE);
+      console.log("Payload:", payload);
 
       const response = await axios.post(`${config.GENERATE_IMAGE}`, payload);
 
