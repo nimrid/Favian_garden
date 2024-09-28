@@ -1,16 +1,15 @@
-const walletConnectController = (req, res) => {
+exports.connectWallet = (req, res) => {
   const { walletAddress } = req.body;
-  console.log(walletAddress);
+
   if (!walletAddress) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Wallet address is required" });
+    return res.status(400).json({ message: "Wallet address is required" });
   }
 
-  // Store wallet address in session (can also use JWT or other storage methods)
-  req.session.walletAddress = walletAddress;
+  req.session.walletAddress = walletAddress; // Store wallet address in session
+  console.log("Received Wallet Address:", walletAddress);
+  console.log("Session Data:", req.session); // Log session data
 
-  return res.json({ success: true, message: "Wallet address stored" });
+  res
+    .status(200)
+    .json({ message: "Wallet address received successfully", walletAddress });
 };
-
-module.exports = { walletConnectController };

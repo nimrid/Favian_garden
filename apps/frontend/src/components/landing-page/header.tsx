@@ -19,27 +19,28 @@ export const Header: React.FC<HeaderProps> = ({ navItems = [], ...props }) => {
       if (publicKey) {
         const walletAddress = publicKey.toString();
         console.log("Connected Wallet Address:", walletAddress);
-
+  
         try {
-          // Send the wallet address to the backend to store in the session or token
-          const response = await fetch('http://localhost:3000/api/v1/wallet/connect', {
+          const response = await fetch('http://localhost:5000/api/v1/wallet/connect', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ walletAddress }),
+            credentials: "include", // Important for session cookies
           });
+  
           const result = await response.json();
           console.log(result);
           if (!response.ok) {
             throw new Error('Failed to send wallet address');
           }
-
+  
           console.log('Wallet address sent to the backend successfully.');
         } catch (error) {
-          console.error('Error sending wallet address:',);
+          console.error('Error sending wallet address:', error);
         }
       }
     };
-
+  
     sendWalletAddress();
   }, [publicKey]);  // Run the effect only when publicKey changes (when the wallet connects)
   return (

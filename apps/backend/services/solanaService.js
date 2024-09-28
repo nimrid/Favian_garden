@@ -13,6 +13,7 @@ const mintNFT = async (name, description, attributes, imageUrl) => {
   // Metadata for the NFT
   const metadata = {
     name,
+    description,
     symbol: "NFT",
     uri: imageUrl, // Image URL from S3
     sellerFeeBasisPoints: 500, // 5% royalties
