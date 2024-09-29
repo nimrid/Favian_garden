@@ -1,26 +1,26 @@
-import React from "react";
+import React from 'react';
 
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib";
-import { MyCreationCard } from "../_components/my-creations/my-creation-card";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib';
+import { MyCreationCard } from '../_components/my-creations/my-creation-card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const MyCreationsPage: React.FC = () => {
   return (
-    <ScrollArea className="w-screen h-screen">
-      <main className="container mx-auto max-w-7xl p-10">
+    <ScrollArea className="container mx-auto max-w-7xl w-full h-screen">
+      <main className="p-12">
         <div className="flex items-center space-x-12">
           <Button
-            size={"lg"}
-            className={cn("bg-accent-1/80 hover:bg-accent-1/60 min-w-36")}
+            size={'lg'}
+            className={cn('bg-accent-1/80 hover:bg-accent-1/60 min-w-36')}
           >
             In market
           </Button>
           <Button
-            variant={"outline"}
-            size={"lg"}
+            variant={'outline'}
+            size={'lg'}
             className={cn(
-              "border-accent-1/50 hover:border-accent-1/60 hover:bg-background-1/20 min-w-36"
+              'border-accent-1/50 hover:border-accent-1/60 hover:bg-background-1/20 min-w-36'
             )}
           >
             Draft

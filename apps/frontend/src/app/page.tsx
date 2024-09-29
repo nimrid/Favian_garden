@@ -1,6 +1,4 @@
-"use client";
-
-import * as React from "react";
+'use client';
 
 import {
   FeatureSection,
@@ -12,11 +10,11 @@ import {
   RecentlyAddedNftsSection,
   TopNFTSection,
   TopSellerSection,
-} from "@/components/landing-page";
+} from '@/components/landing-page';
 
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { navItems } from "@/constant/constant";
-import { useAppStore } from "@/store";
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { navItems } from '@/constant/constant';
+import { useAppStore } from '@/store';
 
 const LandingPage = () => {
   const { showMobileMenu } = useAppStore();

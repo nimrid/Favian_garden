@@ -4,22 +4,24 @@
  * TWITTER: @SoumitraSaha100
  */
 
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 // import localFont from "next/font/local";
 
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { cn } from "@/lib";
-import AppWalletProvider from "./components/AppWalletProvider";
-import "./globals.css";
-const inter = Inter({ subsets: ["latin"] });
+import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/toaster';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { cn } from '@/lib';
+import AppWalletProvider from './app/_components/AppWalletProvider';
+import './globals.css';
+import { ClientProvider } from '@/components/provider';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Favian Garden",
+  title: 'Favian Garden',
   description:
-    "A platform where AI Artists and creators generate stunning AI ART, mint them as NFTs on the Solana network using METAPLEX",
+    'A platform where AI Artists and creators generate stunning AI ART, mint them as NFTs on the Solana network using METAPLEX',
 };
 
 export default function RootLayout({
@@ -27,7 +29,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isDevMode = process.env.NODE_ENV !== "production";
+  const isDevMode = process.env.NODE_ENV !== 'production';
 
   return (
     <html lang="en">
@@ -35,19 +37,21 @@ export default function RootLayout({
         className={cn(
           inter.className,
           `antialiased`,
-          isDevMode && "debug-screens"
+          isDevMode && 'debug-screens'
         )}
       >
         <AppWalletProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="dark"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <TooltipProvider>{children}</TooltipProvider>
-            <Toaster />
-          </ThemeProvider>
+          <ClientProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="dark"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <TooltipProvider>{children}</TooltipProvider>
+              <Toaster />
+            </ThemeProvider>
+          </ClientProvider>
         </AppWalletProvider>
       </body>
     </html>

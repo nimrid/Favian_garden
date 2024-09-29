@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 
 import {
   AlertDialog,
@@ -12,16 +12,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
 
-import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib";
-import SidebarCard from "./sidebar-card";
-import { usePathname } from "next/navigation";
-import { Routes } from "@/types";
-import TopSellersCard from "./top-sellers-card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { topSellers } from "@/constant";
+import { Button, buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib';
+import SidebarCard from './sidebar-card';
+import { usePathname } from 'next/navigation';
+import { Routes } from '@/types';
+import TopSellersCard from './top-sellers-card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { topSellers } from '@/constant';
 
 type GenerateHistory = {
   title: string;
@@ -31,22 +31,22 @@ type GenerateHistory = {
 
 const generateHistories: GenerateHistory[] = [
   {
-    title: "Generate an Image of A ha...",
+    title: 'Generate an Image of A ha...',
     description:
       "A ha! This is an example of a haiku generated using our AI. It's a simple yet powerful way to express emotions and thoughts.",
-    date: "July 12, 2023",
+    date: 'July 12, 2023',
   },
   {
-    title: "Generate an Image of A ha...",
+    title: 'Generate an Image of A ha...',
     description:
       "A ha! This is an example of a haiku generated using our AI. It's a simple yet powerful way to express emotions and thoughts.",
-    date: "July 12, 2023",
+    date: 'July 12, 2023',
   },
   {
-    title: "Generate an Image of A ha...",
+    title: 'Generate an Image of A ha...',
     description:
       "A ha! This is an example of a haiku generated using our AI. It's a simple yet powerful way to express emotions and thoughts.",
-    date: "July 12, 2023",
+    date: 'July 12, 2023',
   },
 ];
 
@@ -58,15 +58,6 @@ export const SideBarComponent = () => {
       <aside className="group/right-sidebar h-full dark:bg-background overflow-y-auto relative flex w-full flex-col  overflow-x-hidden px-3">
         {pathname === Routes.Market ? (
           <>
-            {/* Statistic */}
-            <div className="mt-16">
-              <h3 className="text-xl mb-8">Statistics</h3>
-
-              <div className="flex items-center justify-center w-full h-fit">
-                <div className="w-48 h-48 bg-muted rounded-xl"></div>
-              </div>
-            </div>
-
             {/* Sales */}
             <div className="flex flex-col space-y-3 mt-8">
               <h3 className="text-xl">Sales</h3>
@@ -87,8 +78,8 @@ export const SideBarComponent = () => {
               <div className="flex items-center justify-between w-full">
                 <h3>Top Sellers</h3>
                 <Button
-                  variant={"link"}
-                  size={"sm"}
+                  variant={'link'}
+                  size={'sm'}
                   className="text-destructive"
                 >
                   See more
@@ -119,8 +110,8 @@ export const SideBarComponent = () => {
                   <div
                     className={cn(
                       buttonVariants({
-                        variant: "link",
-                        className: "cursor-pointer text-destructive",
+                        variant: 'link',
+                        className: 'cursor-pointer text-destructive',
                       })
                     )}
                   >
