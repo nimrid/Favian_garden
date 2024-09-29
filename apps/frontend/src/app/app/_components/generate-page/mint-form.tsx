@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+import * as React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -13,12 +13,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib";
-import { ChevronLeft } from "lucide-react";
-import { PageTitle } from "../page-title";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib';
+import { ChevronLeft } from 'lucide-react';
+import { PageTitle } from '../page-title';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { config } from '@/config';
+import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   name: z.string().min(2).max(50),
@@ -29,33 +32,69 @@ const formSchema = z.object({
   perks: z.string().optional(),
 });
 
-type MintFormProps = {
+interface IMintFormProps {
+  imageUrl: string;
   onClick?: () => void;
-};
+}
 
-const MintForm: React.FC<MintFormProps> = ({ onClick = () => {} }) => {
+const MintForm: React.FC<IMintFormProps> = ({
+  imageUrl,
+  onClick = () => {},
+}) => {
+  const { publicKey } = useWallet();
+
   const [step, setStep] = React.useState(1);
+
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      attributes: "",
-      price: "",
-      url: "",
-      perks: "",
+      name: '',
+      description: '',
+      attributes: '',
+      price: '',
+      url: '',
+      perks: '',
     },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // TODO: Implementation Pending
-    if (step === 1) {
-      // If we are on step 1, go to step 2
-      setStep(2);
-    } else {
-      // On step 2, submit the form
-      console.log("Form submitted with values:", values);
+    try {
+      const formData = new FormData();
+
+      formData.append('name', values.name);
+      formData.append('description', values.description);
+      formData.append('attributes', JSON.stringify(values.attributes));
+      formData.append('walletAddress', publicKey?.toString() ?? 'null');
+      formData.append('price', values.price.toString());
+      formData.append('royaltyFee', `0.05`); // TODO: (@vikram-2101) Is This really a thing?
+      formData.append('file', imageUrl);
+
+      const response = await fetch(config.MINT, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to mint NFT');
+      }
+
+      const result = await response.json();
+      // Maybe redirect to the My Creations Page
+      console.log('NFT minted successfully:', result);
+      toast({
+        title: 'NFT Minted Successfully',
+        description: 'Your NFT has been minted!',
+      });
+    } catch (error) {
+      console.error('Error minting NFT:', error);
+      if (error instanceof Error) {
+        toast({
+          title: 'Error Minting NFT',
+          description: error.message,
+        });
+      }
     }
   };
 
@@ -63,9 +102,9 @@ const MintForm: React.FC<MintFormProps> = ({ onClick = () => {} }) => {
     <div>
       <div className="flex items-center space-x-5">
         <Button
-          variant={"secondary"}
-          size={"sm"}
-          className={cn("w-8 h-8 p-1")}
+          variant={'secondary'}
+          size={'sm'}
+          className={cn('w-8 h-8 p-1')}
           onClick={
             step === 1
               ? onClick
@@ -78,7 +117,7 @@ const MintForm: React.FC<MintFormProps> = ({ onClick = () => {} }) => {
         </Button>
 
         <PageTitle
-          label={step === 1 ? "Quick Mint" : "Set up listing price"}
+          label={step === 1 ? 'Quick Mint' : 'Set up listing price'}
           as="h4"
         />
       </div>
@@ -140,9 +179,13 @@ const MintForm: React.FC<MintFormProps> = ({ onClick = () => {} }) => {
                     </FormItem>
                   )}
                 />
+
                 <Button
-                  type="submit"
-                  className={cn("w-full bg-accent-1 hover:bg-accent-1/80")}
+                  className={cn('w-full bg-accent-1 hover:bg-accent-1/80')}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setStep(2);
+                  }}
                 >
                   Next
                 </Button>
@@ -209,7 +252,7 @@ const MintForm: React.FC<MintFormProps> = ({ onClick = () => {} }) => {
                 />
                 <Button
                   type="submit"
-                  className={cn("w-full bg-accent-1 hover:bg-accent-1/80")}
+                  className={cn('w-full bg-accent-1 hover:bg-accent-1/80')}
                 >
                   Submit
                 </Button>
