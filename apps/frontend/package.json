@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "NODE_OPTIONS=--no-warnings next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -34,6 +34,7 @@
     "@solana/web3.js": "^1.95.3",
     "@tanstack/react-query": "^5.56.2",
     "@tanstack/react-query-devtools": "^5.58.0",
+    "@walletconnect/logger": "^2.1.2",
     "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -41,6 +42,7 @@
     "lucide-react": "^0.439.0",
     "next": "14.2.8",
     "next-themes": "^0.3.0",
+    "pino": "^9.4.0",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.53.0",

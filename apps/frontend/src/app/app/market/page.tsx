@@ -44,7 +44,7 @@ const filterOptionsData = [
 
 type FilterOptions = (typeof filterOptionsData)[number]['label'];
 
-const MarketPage: React.FC = () => {
+const MarketPage = () => {
   const [activeFilter, setActiveFilter] = React.useState<FilterOptions>('All');
   const [visibleAllFilters, setVisibleAllFilters] = React.useState(false);
 

@@ -1,8 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib";
-import { Search } from "lucide-react";
-import React, { useState } from "react";
+'use client';
+
+import { Search } from 'lucide-react';
+import * as React from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { cn } from '@/lib';
 
 interface SearchBoxProps {
   value: string;
@@ -12,11 +15,11 @@ interface SearchBoxProps {
 
 const SearchBox: React.FC<SearchBoxProps> = ({
   value,
-  placeholder = "Search...",
+  placeholder = 'Search...',
   onChange = () => {},
   ...props
 }) => {
-  const [isFocused, setIsFocused] = useState(false); // Track focus state
+  const [isFocused, setIsFocused] = React.useState(false); // Track focus state
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
@@ -34,11 +37,11 @@ const SearchBox: React.FC<SearchBoxProps> = ({
   return (
     <div
       className={cn(
-        "flex items-center rounded-md transition-all duration-300 border border-muted-2",
-        isFocused && "ring-1 ring-accent-1"
+        'flex items-center rounded-md transition-all duration-300 border border-muted-2',
+        isFocused && 'ring-1 ring-accent-1'
       )}
     >
-      <Button variant={"ghost"} size={"icon"}>
+      <Button variant={'ghost'} size={'icon'}>
         <Search className="w-5 h-5 text-muted-foreground" />
       </Button>
       <Input

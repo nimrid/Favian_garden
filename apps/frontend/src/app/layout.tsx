@@ -8,13 +8,13 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 // import localFont from "next/font/local";
 
+import { ClientProvider } from '@/components/provider';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { cn } from '@/lib';
-import AppWalletProvider from './app/_components/AppWalletProvider';
+import AppWalletProvider from '../components/AppWalletProvider';
 import './globals.css';
-import { ClientProvider } from '@/components/provider';
 
 const inter = Inter({ subsets: ['latin'] });
 

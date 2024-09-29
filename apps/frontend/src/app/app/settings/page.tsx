@@ -1,11 +1,7 @@
-import React from "react";
+import React from 'react';
 
-interface SettingsProps {
-  //Props
-}
-
-const Settings: React.FC<SettingsProps> = () => {
-  return <div>Settings</div>;
+const Settings = () => {
+  return <main>Settings</main>;
 };
 
 export default Settings;

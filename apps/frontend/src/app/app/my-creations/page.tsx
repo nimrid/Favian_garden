@@ -5,7 +5,7 @@ import { cn } from '@/lib';
 import { MyCreationCard } from '../_components/my-creations/my-creation-card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-const MyCreationsPage: React.FC = () => {
+const MyCreationsPage = () => {
   return (
     <ScrollArea className="container mx-auto max-w-7xl w-full h-screen">
       <main className="p-12">
