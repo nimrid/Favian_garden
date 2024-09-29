@@ -172,9 +172,9 @@ const getAllNFTs = async (req, res) => {
     });
   }
 };
-
-// Purchase NFT
+// PURCHASE NFT
 const purchaseNFT = async (req, res) => {
+  console.log(req.body);
   const { mintAddress, buyerWalletAddress, price } = req.body;
 
   if (!mintAddress || !buyerWalletAddress || !price) {
@@ -194,20 +194,60 @@ const purchaseNFT = async (req, res) => {
         .json({ success: false, message: "NFT not found." });
     }
 
+    // Check if the NFT has royalty and creator information
+    if (!nft.royaltyFee || !nft.walletAddress) {
+      return res.status(400).json({
+        success: false,
+        message: "NFT does not have royalty or creator information.",
+      });
+    }
+
+    // Ensure wallet addresses are PublicKey objects
+    const buyerPubKey = new PublicKey(buyerWalletAddress);
+    const sellerPubKey = new PublicKey(nft.walletAddress);
+
+    // Calculate royalty fee
+    const royaltyAmount = (nft.royaltyFee / 100) * price;
+    const sellerAmount = price - royaltyAmount;
+
     // Step 2: Connect to Solana cluster
     const connection = new Connection(
       clusterApiUrl("mainnet-beta"),
       "confirmed"
     );
 
+    // ** Check buyer's wallet balance **
+    const buyerBalance = await connection.getBalance(buyerPubKey);
+
+    // Check if the buyer has enough balance to cover price + transaction fees
+    const transactionFeeBuffer = 5000; // A small buffer for transaction fees
+    if (buyerBalance < price + transactionFeeBuffer) {
+      return res.status(400).json({
+        success: false,
+        message: `Insufficient funds. Buyer balance is ${
+          buyerBalance / 1_000_000_000
+        } SOL, but ${price / 1_000_000_000} SOL is required.`,
+      });
+    }
+
     // Step 3: Create transaction to transfer funds (unsigned)
-    const transaction = new Transaction().add(
-      SystemProgram.transfer({
-        fromPubkey: buyerWalletAddress, // This should be the buyer's public wallet address
-        toPubkey: nft.walletAddress, // Assuming the seller's wallet address is the NFT's wallet address
-        lamports: price, // Price in lamports (1 SOL = 1,000,000,000 lamports)
-      })
-    );
+    const transaction = new Transaction()
+      // Transfer royalty to the creator's wallet
+      .add(
+        SystemProgram.transfer({
+          fromPubkey: buyerPubKey, // Buyer's wallet as PublicKey
+          toPubkey: sellerPubKey, // Seller's wallet as PublicKey
+          lamports: royaltyAmount, // Royalty amount in lamports
+        })
+      )
+      // Transfer remaining amount to the seller's wallet
+      .add(
+        SystemProgram.transfer({
+          fromPubkey: buyerPubKey, // Buyer's wallet as PublicKey
+          toPubkey: sellerPubKey, // Seller's wallet as PublicKey
+          lamports: sellerAmount, // Remaining amount after royalty
+        })
+      );
 
     // Serialize transaction and send it to the buyer for signing
     const serializedTransaction = transaction
