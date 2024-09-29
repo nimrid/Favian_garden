@@ -212,7 +212,7 @@ export default function HomePage() {
       }
 
       const blob = await response.blob();
-      const downloadUrl = window.URL.createObjectURL(blob);
+      const downloadUrl = window?.URL?.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = downloadUrl;
       const fileName = imageUrl.split('/').pop() || 'downloaded_image';
@@ -221,7 +221,7 @@ export default function HomePage() {
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      window.URL.revokeObjectURL(downloadUrl);
+      window?.URL?.revokeObjectURL(downloadUrl);
     } catch (error) {
       console.error('Error downloading image:', error);
     } finally {

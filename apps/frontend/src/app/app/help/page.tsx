@@ -1,11 +1,7 @@
-import React from "react";
+import React from 'react';
 
-interface HelpPageProps {
-  //Props
-}
-
-const HelpPage: React.FC<HelpPageProps> = () => {
-  return <div>HelpPage</div>;
+const HelpPage = () => {
+  return <main>HelpPage</main>;
 };
 
 export default HelpPage;

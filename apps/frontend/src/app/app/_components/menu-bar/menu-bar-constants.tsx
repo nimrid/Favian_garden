@@ -3,11 +3,11 @@ import {
   CircleHelp,
   Folder,
   Settings,
-} from "lucide-react";
-import { v4 as uuidv4 } from "uuid";
+} from 'lucide-react';
+import { v4 as uuidv4 } from 'uuid';
 
-import { MenuGroup, MenuItem } from "@/types";
-import { generateIcon } from "./menu-icons";
+import { MenuGroup, MenuItem } from '@/types';
+import { generateIcon } from './menu-icons';
 
 export const menuItems: MenuGroup[] = [
   {
@@ -15,8 +15,8 @@ export const menuItems: MenuGroup[] = [
     items: [
       {
         uniqueId: uuidv4(),
-        name: "Generate",
-        route: "/app/",
+        name: 'Generate',
+        route: '/app/',
         icon: (className) =>
           generateIcon({
             className,
@@ -24,14 +24,14 @@ export const menuItems: MenuGroup[] = [
       },
       {
         uniqueId: uuidv4(),
-        name: "My Creations",
-        route: "/app/my-creations",
+        name: 'My Creations',
+        route: '/app/my-creations/',
         icon: (className) => <Folder className={className} />,
       },
       {
         uniqueId: uuidv4(),
-        name: "Market",
-        route: "/app/market",
+        name: 'Market',
+        route: '/app/market/',
         icon: (className) => <ChartNoAxesCombined className={className} />,
       },
     ],
@@ -41,14 +41,14 @@ export const menuItems: MenuGroup[] = [
     items: [
       {
         uniqueId: uuidv4(),
-        name: "Settings",
-        route: "/app/settings",
+        name: 'Settings',
+        route: '/app/settings/',
         icon: (className) => <Settings className={className} />,
       },
       {
         uniqueId: uuidv4(),
-        name: "Help",
-        route: "/app/help",
+        name: 'Help',
+        route: '/app/help/',
         icon: (className) => <CircleHelp className={className} />,
       },
     ],
@@ -58,8 +58,8 @@ export const menuItems: MenuGroup[] = [
 export const mobileMenuItems: MenuItem[] = [
   {
     uniqueId: uuidv4(),
-    name: "Generate",
-    route: "/app/",
+    name: 'Generate',
+    route: '/app/',
     icon: (className) =>
       generateIcon({
         className,
@@ -67,20 +67,20 @@ export const mobileMenuItems: MenuItem[] = [
   },
   {
     uniqueId: uuidv4(),
-    name: "My Creations",
-    route: "/app/my-creations",
+    name: 'My Creations',
+    route: '/app/my-creations/',
     icon: (className) => <Folder className={className} />,
   },
   {
     uniqueId: uuidv4(),
-    name: "Market",
-    route: "/app/market",
+    name: 'Market',
+    route: '/app/market/',
     icon: (className) => <ChartNoAxesCombined className={className} />,
   },
   {
     uniqueId: uuidv4(),
-    name: "Settings",
-    route: "/app/settings",
+    name: 'Settings',
+    route: '/app/settings/',
     icon: (className) => <Settings className={className} />,
   },
 ];
