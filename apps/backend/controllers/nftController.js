@@ -7,7 +7,6 @@ const {
   keypairIdentity,
   irysStorage,
 } = require("@metaplex-foundation/js");
-// const { v4: uuidv4 } = require("uuid"); // Import UUID library for custom token
 
 const {
   Keypair,
@@ -26,59 +25,49 @@ const {
 
 const MINT_SIZE = MintLayout.span; // Size of the mint account
 
+// Function to create a mint account
 const createMintAccount = async (connection, payer) => {
-  // Generate a new mint account keypair
-  const mint = Keypair.generate();
-
-  // Get the minimum lamports required for rent exemption
+  const mint = Keypair.generate(); // Generate new mint account
   const lamports =
     await connection.getMinimumBalanceForRentExemption(MINT_SIZE);
 
-  // Create a transaction to create and initialize the mint account
+  // Create and initialize mint account
   const transaction = new Transaction().add(
     SystemProgram.createAccount({
       fromPubkey: payer.publicKey,
       newAccountPubkey: mint.publicKey,
       space: MINT_SIZE,
-      lamports: lamports, // Rent-exempt lamports
+      lamports: lamports,
       programId: TOKEN_PROGRAM_ID,
     }),
+
     createInitializeMintInstruction(
-      mint.publicKey, // Mint account public key
-      0, // Decimal places (0 for NFTs)
+      mint.publicKey,
+      0, // 0 decimal places for NFTs
       payer.publicKey, // Mint authority
-      payer.publicKey, // Freeze authority (usually set to the same as mint authority)
-      TOKEN_PROGRAM_ID // Solana token program
+      payer.publicKey, // Freeze authority
+      TOKEN_PROGRAM_ID
     )
   );
 
   // Send and confirm the transaction
-  try {
-    await sendAndConfirmTransaction(connection, transaction, [payer, mint]);
-    console.log(
-      "Mint account successfully created:",
-      mint.publicKey.toBase58()
-    );
-  } catch (error) {
-    console.error("Error creating mint account:", error);
-    throw error; // Rethrow to handle it in the calling function
-  }
+  await sendAndConfirmTransaction(connection, transaction, [payer, mint]);
 
-  // Return the mint public key for further usage
+  // Ensure mint account exists by waiting for the account to be fully created
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
   return mint.publicKey;
 };
 
-// MINT NFT
-// Load keypair
+// MINT NFT Function
 const keypairPath = path.resolve(__dirname, "../my-keypair.json");
 const secret = JSON.parse(fs.readFileSync(keypairPath, "utf8"));
 const keypair = Keypair.fromSecretKey(new Uint8Array(secret));
 
-// Initialize Metaplex
-const connection = new Connection(clusterApiUrl("devnet"));
+const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
 const metaplex = Metaplex.make(connection)
-  .use(keypairIdentity(keypair)) // Use the loaded keypair
+  .use(keypairIdentity(keypair))
   .use(
     irysStorage({
       address: "https://node1.irys.network",
@@ -86,6 +75,7 @@ const metaplex = Metaplex.make(connection)
       timeout: 60000,
     })
   );
+
 const mintNFT = async (req, res) => {
   try {
     const { name, description, attributes, walletAddress, price, royaltyFee } =
@@ -96,15 +86,22 @@ const mintNFT = async (req, res) => {
       throw new Error("Invalid image URL");
     }
 
-    console.log("Image URL for NFT:", imageUrl); // Log the image URL
-    const mintAddress = await createMintAccount(connection, keypair);
+    console.log("Image URL for NFT:", imageUrl);
+    const balance = await connection.getBalance(keypair.publicKey);
+    console.log(`Balance of the keypair is: ${balance} lamports`);
 
+    // Create mint account
+    const mintAddress = await createMintAccount(connection, keypair);
     console.log("Mint account created:", mintAddress.toBase58());
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // Wait for mint account confirmation on the blockchain
+    await new Promise((resolve) => setTimeout(resolve, 5000));
     const accountInfo = await connection.getAccountInfo(mintAddress);
     if (!accountInfo) {
       throw new Error("Mint account does not exist in the blockchain.");
     }
+
+    // Metadata for NFT
     const metadata = {
       name,
       symbol: "NFT",
@@ -120,8 +117,8 @@ const mintNFT = async (req, res) => {
     };
 
     console.log("Metadata before saving:", metadata);
-    console.log("imageUrl type:", typeof metadata.uri);
 
+    // Mint the NFT using Metaplex
     const { nft } = await metaplex.nfts().create({
       uri: metadata.uri,
       name: metadata.name,
@@ -136,6 +133,7 @@ const mintNFT = async (req, res) => {
       mintAddress,
     });
 
+    // Save to database
     const nftData = {
       mintAddress: mintAddress.toBase58(),
       name: metadata.name,
