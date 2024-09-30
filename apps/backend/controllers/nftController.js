@@ -17,13 +17,33 @@ const {
   Connection,
   clusterApiUrl,
 } = require("@solana/web3.js");
+
 const {
   TOKEN_PROGRAM_ID,
   MintLayout,
   createInitializeMintInstruction,
+  createInitializeAccountInstruction,
+  createMintToInstruction,
 } = require("@solana/spl-token");
 
+const keypairPath = path.resolve(__dirname, "../my-keypair.json");
+const secret = JSON.parse(fs.readFileSync(keypairPath, "utf8"));
+const keypair = Keypair.fromSecretKey(new Uint8Array(secret));
+
+const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+
+const metaplex = Metaplex.make(connection)
+  .use(keypairIdentity(keypair))
+  .use(
+    irysStorage({
+      address: "https://node1.irys.network",
+      providerUrl: "https://api.devnet.solana.com",
+      timeout: 60000,
+    })
+  );
+
 const MINT_SIZE = MintLayout.span; // Size of the mint account
+const TOKEN_ACCOUNT_SIZE = 165; // Size of the token account in bytes
 
 // Function to create a mint account
 const createMintAccount = async (connection, payer) => {
@@ -59,23 +79,59 @@ const createMintAccount = async (connection, payer) => {
   return mint.publicKey;
 };
 
-// MINT NFT Function
-const keypairPath = path.resolve(__dirname, "../my-keypair.json");
-const secret = JSON.parse(fs.readFileSync(keypairPath, "utf8"));
-const keypair = Keypair.fromSecretKey(new Uint8Array(secret));
+// Function to create a token account
+const createTokenAccount = async (connection, mintAddress, ownerAddress) => {
+  const tokenAccount = Keypair.generate(); // Generate new token account
+  const lamports =
+    await connection.getMinimumBalanceForRentExemption(TOKEN_ACCOUNT_SIZE);
 
-const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-
-const metaplex = Metaplex.make(connection)
-  .use(keypairIdentity(keypair))
-  .use(
-    irysStorage({
-      address: "https://node1.irys.network",
-      providerUrl: "https://api.devnet.solana.com",
-      timeout: 60000,
-    })
+  const transaction = new Transaction().add(
+    SystemProgram.createAccount({
+      fromPubkey: keypair.publicKey,
+      newAccountPubkey: tokenAccount.publicKey,
+      space: TOKEN_ACCOUNT_SIZE,
+      lamports: lamports,
+      programId: TOKEN_PROGRAM_ID,
+    }),
+    createInitializeAccountInstruction(
+      tokenAccount.publicKey,
+      mintAddress,
+      ownerAddress,
+      TOKEN_PROGRAM_ID
+    )
   );
 
+  await sendAndConfirmTransaction(connection, transaction, [
+    keypair,
+    tokenAccount,
+  ]);
+  return tokenAccount.publicKey;
+};
+
+// Function to mint tokens
+const mintTo = async (
+  connection,
+  payer,
+  mintAddress,
+  dest,
+  authority,
+  signers
+) => {
+  const transaction = new Transaction().add(
+    createMintToInstruction(
+      mintAddress,
+      dest,
+      authority,
+      1, // Amount of tokens to mint
+      [],
+      TOKEN_PROGRAM_ID
+    )
+  );
+
+  await sendAndConfirmTransaction(connection, transaction, [payer, ...signers]);
+};
+
+// MINT NFT Function
 const mintNFT = async (req, res) => {
   try {
     const { name, description, attributes, walletAddress, price, royaltyFee } =
@@ -90,16 +146,36 @@ const mintNFT = async (req, res) => {
     const balance = await connection.getBalance(keypair.publicKey);
     console.log(`Balance of the keypair is: ${balance} lamports`);
 
-    // Create mint account
-    const mintAddress = await createMintAccount(connection, keypair);
-    console.log("Mint account created:", mintAddress.toBase58());
-
-    // Wait for mint account confirmation on the blockchain
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-    const accountInfo = await connection.getAccountInfo(mintAddress);
-    if (!accountInfo) {
-      throw new Error("Mint account does not exist in the blockchain.");
+    // Convert walletAddress to PublicKey
+    let userPublicKey;
+    try {
+      userPublicKey = new PublicKey(walletAddress);
+    } catch (error) {
+      throw new Error("Invalid wallet address format.");
     }
+
+    // Create mint account and specify the user as the mint authority
+    const mintAddress = await createMintAccount(
+      connection,
+      keypair // Keep the keypair as payer for transaction costs
+    );
+
+    // Create token account for the user's wallet address
+    const userTokenAccount = await createTokenAccount(
+      connection,
+      mintAddress,
+      userPublicKey
+    );
+
+    // Mint the NFT to the user's token account
+    await mintTo(
+      connection,
+      keypair, // Use the keypair to sign the transaction
+      mintAddress,
+      userTokenAccount,
+      keypair.publicKey, // Use the keypair as the mint authority
+      [] // No additional signers
+    );
 
     // Metadata for NFT
     const metadata = {
