@@ -68,7 +68,9 @@ const MintForm: React.FC<IMintFormProps> = ({
       formData.append('attributes', JSON.stringify(values.attributes));
       formData.append('walletAddress', publicKey?.toString() ?? 'null');
       formData.append('price', values.price.toString());
-      formData.append('royaltyFee', `0.05`); // TODO: (@vikram-2101) Is This really a thing?
+      formData.append('royaltyFee', `5`); // TODO: (@vikram-2101) Is This really a thing?
+      // just send the royaly fee as a number in backend i have divided it by 100
+      // in schema i have kept the data type of price as number
       formData.append('file', imageUrl);
 
       const response = await fetch(config.MINT, {
