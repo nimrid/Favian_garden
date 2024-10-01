@@ -271,7 +271,7 @@ export default function HomePage() {
                     </DialogFooter>
                   </div>
 
-                  <div className="flex items-center w-full mt-6 h-fit justify-between lg:mt-auto self-end">
+                  <div className="flex items-center w-full mt-6 gap-4 h-fit justify-between lg:mt-auto self-end">
                     <Button
                       variant={'outline'}
                       className={cn('min-w-28 lg:min-w-40 border-green-300')}
@@ -587,7 +587,7 @@ export default function HomePage() {
               >
                 <div className="flex space-x-3 items-center">
                   {loading ? (
-                    <Loader2 className="w-5 h-5 text-black" />
+                    <Loader2 className="w-5 h-5 text-black animate-spin" />
                   ) : (
                     <WandSparkles className="w-5 h-5" />
                   )}
