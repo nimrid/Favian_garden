@@ -23,7 +23,9 @@ const port = process.env.PORT || 8080;
 // CORS configuration
 app.use(
   cors({
-    origin: "https://favian-garden.vercel.app/", // Update this to your frontend URL
+    origin: "*", // Update this to your frontend URL
+    methods: "GET, HEAD, PUT,POST,DELETE",
+    allowedHeaders: "Content-Type, Authorization",
     credentials: true,
   })
 );
