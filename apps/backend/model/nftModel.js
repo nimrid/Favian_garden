@@ -34,6 +34,10 @@ const nftSchema = new mongoose.Schema({
     type: String,
     required: true, // You can still store the mint address for blockchain reference, but it can be optional
   },
+  isSold: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now, // Automatically set the creation date

@@ -236,7 +236,8 @@ const mintNFT = async (req, res) => {
 // Get all minted NFTs
 const getAllNFTs = async (req, res) => {
   try {
-    const nfts = await NFT.find();
+    // Fetch only NFTs that have not been sold
+    const nfts = await NFT.find({ isSold: false });
     res.json({ success: true, data: nfts });
   } catch (error) {
     res.status(500).json({
@@ -327,6 +328,9 @@ const purchaseNFT = async (req, res) => {
     const serializedTransaction = transaction
       .serialize({ requireAllSignatures: false })
       .toString("base64");
+
+    // ** Update the NFT to mark it as sold after the transaction is successfully created **
+    await NFT.findOneAndUpdate({ mintAddress }, { isSold: true });
 
     return res.json({
       success: true,
