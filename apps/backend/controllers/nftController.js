@@ -74,7 +74,7 @@ const createMintAccount = async (connection, payer) => {
   await sendAndConfirmTransaction(connection, transaction, [payer, mint]);
 
   // Ensure mint account exists by waiting for the account to be fully created
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
 
   return mint.publicKey;
 };
