@@ -251,7 +251,15 @@ const getAllNFTs = async (req, res) => {
 const purchaseNFT = async (req, res) => {
   console.log(req.body);
   const { mintAddress, buyerWalletAddress, price } = req.body;
+  // Convert price back to a number
+  const parsedPrice = Number(price);
 
+  if (isNaN(parsedPrice)) {
+    return res.status(400).json({
+      success: false,
+      message: "Invalid price value.",
+    });
+  }
   if (!mintAddress || !buyerWalletAddress || !price) {
     return res.status(400).json({
       success: false,
@@ -345,8 +353,73 @@ const purchaseNFT = async (req, res) => {
   }
 };
 
+// Get recently minted NFTs for a user
+const recentNFTs = async (req, res) => {
+  const { walletAddress } = req.params;
+
+  try {
+    // Find NFTs minted by the specified wallet address, sorted by mintedAt in descending order
+    const nfts = await NFT.find({ walletAddress })
+      .sort({ mintedAt: -1 }) // Sort by the most recently minted
+      .limit(3); // Limit to the most recent 10 NFTs
+    console.log(nfts);
+    return res.status(200).json({
+      success: true,
+      nfts,
+    });
+  } catch (error) {
+    console.error("Error fetching NFTs:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
+  }
+};
+
+const { gfs } = require("../utils/gridFsStorage");
+// Get image file by imageUrl
+const getImage = async (req, res) => {
+  const { uri } = req.params;
+
+  try {
+    // Assuming the imageUrl is the filename, extract it accordingly if needed
+    const filename = uri; // Adjust this if imageUrl includes other parts
+
+    // Find the file in GridFS
+    uploadImageToGridFS.files.findOne({ filename }, (err, file) => {
+      if (!file || file.length === 0) {
+        return res
+          .status(404)
+          .json({ success: false, message: "File not found" });
+      }
+
+      // Check if the file is an image
+      if (
+        file.contentType !== "image/jpeg" &&
+        file.contentType !== "image/png"
+      ) {
+        return res
+          .status(400)
+          .json({ success: false, message: "File is not an image" });
+      }
+
+      // Stream the image to the response
+      const readStream = gfs.createReadStream(file._id);
+      readStream.pipe(res);
+    });
+  } catch (error) {
+    console.error("Error retrieving image:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
+  }
+};
+
 module.exports = {
   purchaseNFT,
   getAllNFTs,
   mintNFT,
+  recentNFTs,
+  getImage,
 };

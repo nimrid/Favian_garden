@@ -11,9 +11,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@dialectlabs/sdk": "^1.9.4",
     "@metaplex-foundation/js": "^0.20.1",
     "@metaplex-foundation/mpl-token-metadata": "^3.2.1",
     "@metaplex/js": "^4.12.0",
+    "@solana/actions": "^1.6.5",
     "@solana/spl-token": "^0.4.8",
     "@solana/web3.js": "^1.95.3",
     "aws-sdk": "^2.1691.0",

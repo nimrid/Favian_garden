@@ -34,6 +34,18 @@ const nftSchema = new mongoose.Schema({
     type: String,
     required: true, // You can still store the mint address for blockchain reference, but it can be optional
   },
+  likes: {
+    type: Number, // You can also use an array of user IDs if you want to track who liked the NFT
+    default: 0, // Initialize likes to zero
+  },
+  tags: {
+    type: [String], // Array of strings for tags
+    default: [],
+  },
+  typeOfNFT: {
+    type: String, // String field for the type of NFT (e.g., "art", "music", etc.)
+    required: true,
+  },
   isSold: {
     type: Boolean,
     default: false,

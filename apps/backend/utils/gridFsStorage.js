@@ -26,7 +26,7 @@ const uploadImageToGridFS = (file) => {
 
     writeStream.on("finish", () => {
       // Return the generated file URL (or file ID for further use)
-      const imageUrl = `http://localhost:5000/api/files/${filename}`; // You can adjust this URL to your API structure
+      const imageUrl = `api/files/${filename}`; // You can adjust this URL to your API structure
       resolve(imageUrl);
     });
 
@@ -36,4 +36,4 @@ const uploadImageToGridFS = (file) => {
   });
 };
 
-module.exports = { uploadImageToGridFS };
+module.exports = { uploadImageToGridFS, gfs };

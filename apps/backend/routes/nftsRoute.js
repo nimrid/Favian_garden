@@ -4,6 +4,8 @@ const {
   mintNFT,
   getAllNFTs,
   purchaseNFT,
+  recentNFTs,
+  getImage,
 } = require("../controllers/nftController");
 const upload = require("../middlewares/uploadMiddleware");
 
@@ -11,5 +13,7 @@ const upload = require("../middlewares/uploadMiddleware");
 router.post("/mint", upload.single("image"), mintNFT); // Upload image and mint NFT
 router.get("/list", getAllNFTs); // Get all NFTs
 router.post("/purchase", purchaseNFT); // Purchase NFT
+router.get("/recent/:walletAddress", recentNFTs); // Get recent
+router.get("/image/:uri", getImage); // Get image
 
 module.exports = router;
