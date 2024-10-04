@@ -63,7 +63,8 @@ const MarketPage = () => {
         const response = await axios.get(config.MARKETPLACE);
 
         if (response.status === 200) {
-          return response.data;
+          const { data } = response;
+          return data?.data;
         }
 
         return response;

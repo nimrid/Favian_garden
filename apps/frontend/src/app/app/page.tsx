@@ -250,6 +250,7 @@ export default function HomePage() {
                     onClick={() => {
                       setMintBtnClicked((prev) => !prev);
                     }}
+                    onClose={() => setIsOpen((prev) => !prev)}
                   />
                 </div>
               ) : (
