@@ -24,8 +24,8 @@ const port = process.env.PORT || 8080;
 app.use(
   cors({
     origin: '*', // TODO: (@SOUMITRO-SAHA) Update this to Later in AWS Deployment
-    methods: 'GET, HEAD, PUT,POST,DELETE',
-    allowedHeaders: 'Content-Type, Authorization',
+    methods: 'GET,HEAD,PUT,POST,DELETE',
+    allowedHeaders: 'Content-Type,Authorization',
   })
 );
 app.use(express.json());
