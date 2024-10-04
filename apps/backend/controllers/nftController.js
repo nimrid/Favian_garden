@@ -26,10 +26,12 @@ const {
   createMintToInstruction,
 } = require("@solana/spl-token");
 
-const keypairPath = path.resolve(__dirname, "../my-keypair.json");
-const secret = JSON.parse(fs.readFileSync(keypairPath, "utf8"));
+// const keypairPath = path.resolve(__dirname, "../my-keypair.json");
+// const secret = JSON.parse(fs.readFileSync(keypairPath, "utf8"));
+// const keypair = Keypair.fromSecretKey(new Uint8Array(secret));
+// Retrieve the secret key from the environment variable
+const secret = JSON.parse(process.env.SOLANA_SECRET_KEY);
 const keypair = Keypair.fromSecretKey(new Uint8Array(secret));
-
 const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
 const metaplex = Metaplex.make(connection)
