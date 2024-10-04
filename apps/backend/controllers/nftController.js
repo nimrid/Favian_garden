@@ -400,14 +400,14 @@ const getImage = async (req, res) => {
       });
     }
 
-    //Check if the file is an image
-    const mimeType = file[0].contentType;
-    if (mimeType !== "image/jpeg" && mimeType !== "image/png") {
-      return res.status(400).json({
-        success: false,
-        message: "File is not an image",
-      });
-    }
+    // //Check if the file is an image
+    // const mimeType = file[0].contentType;
+    // if (mimeType !== "image/jpeg" && mimeType !== "image/png") {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "File is not an image",
+    //   });
+    // }
 
     // Stream the image to the response
     const readStream = gfs.openDownloadStreamByName(filename); // Open a download stream
