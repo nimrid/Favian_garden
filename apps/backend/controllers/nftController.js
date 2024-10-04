@@ -38,7 +38,7 @@ const metaplex = Metaplex.make(connection)
     irysStorage({
       address: "https://node1.irys.network",
       providerUrl: "https://api.devnet.solana.com",
-      timeout: 60000,
+      timeout: 6000,
     })
   );
 
@@ -376,37 +376,40 @@ const recentNFTs = async (req, res) => {
   }
 };
 
-const { gfs } = require("../utils/gridFsStorage");
+const { getGfs } = require("../utils/gridFsStorage");
 // Get image file by imageUrl
 const getImage = async (req, res) => {
-  const { uri } = req.params;
+  const { uri } = req.params; // Get the image URL from the request
 
   try {
-    // Assuming the imageUrl is the filename, extract it accordingly if needed
-    const filename = uri; // Adjust this if imageUrl includes other parts
+    const gfs = getGfs(); // Retrieve gfs safely
 
-    // Find the file in GridFS
-    uploadImageToGridFS.files.findOne({ filename }, (err, file) => {
-      if (!file || file.length === 0) {
-        return res
-          .status(404)
-          .json({ success: false, message: "File not found" });
-      }
+    // Assuming the imageUrl is the filename, you can directly extract it
+    const filename = uri; // Adjust this if the uri is a full URL
 
-      // Check if the file is an image
-      if (
-        file.contentType !== "image/jpeg" &&
-        file.contentType !== "image/png"
-      ) {
-        return res
-          .status(400)
-          .json({ success: false, message: "File is not an image" });
-      }
+    // Find the file in GridFS using the filename
+    const file = await gfs.find({ filename }).toArray(); // Use gfs, not uploadImageToGridFS
+    console.log(file);
+    // Check if the file exists
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "File not found",
+      });
+    }
 
-      // Stream the image to the response
-      const readStream = gfs.createReadStream(file._id);
-      readStream.pipe(res);
-    });
+    //Check if the file is an image
+    const mimeType = file[0].contentType;
+    if (mimeType !== "image/jpeg" && mimeType !== "image/png") {
+      return res.status(400).json({
+        success: false,
+        message: "File is not an image",
+      });
+    }
+
+    // Stream the image to the response
+    const readStream = gfs.openDownloadStreamByName(filename); // Open a download stream
+    readStream.pipe(res); // Pipe the stream to the response
   } catch (error) {
     console.error("Error retrieving image:", error);
     return res.status(500).json({
@@ -415,7 +418,6 @@ const getImage = async (req, res) => {
     });
   }
 };
-
 module.exports = {
   purchaseNFT,
   getAllNFTs,

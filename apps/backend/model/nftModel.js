@@ -44,7 +44,7 @@ const nftSchema = new mongoose.Schema({
   },
   typeOfNFT: {
     type: String, // String field for the type of NFT (e.g., "art", "music", etc.)
-    required: true,
+    default: "art",
   },
   isSold: {
     type: Boolean,

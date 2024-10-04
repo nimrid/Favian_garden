@@ -29,11 +29,6 @@ app.use(
   })
 );
 app.use(express.json());
-// Database connection
-mongoose
-  .connect(process.env.MONGODB_URL)
-  .then(() => console.log("DB connection successful"))
-  .catch((err) => console.error("DB connection error:", err));
 
 // Session configuration
 app.use(
@@ -57,6 +52,12 @@ app.use("/api/v1/image", imageRoute);
 app.use("/api/v1/nfts", nftsRoute); // Expose the NFT route
 // for wallet
 app.use("/api/v1/wallet", walletRoute);
+
 app.listen(port, () => {
   console.log(`App running on port ${port}`);
 });
+// Database connection
+mongoose
+  .connect(process.env.MONGODB_URL)
+  .then(() => console.log("DB connection successful"))
+  .catch((err) => console.error("DB connection error:", err));

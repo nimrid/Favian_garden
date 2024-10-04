@@ -10,7 +10,16 @@ mongoose.connection.once("open", () => {
     bucketName: "uploads", // The bucket name in GridFS
   });
   gfs = gridfsBucket;
+  console.log("gridfs initialized");
 });
+
+// Function to get gfs
+const getGfs = () => {
+  if (!gfs) {
+    throw new Error("GridFS is not initialized");
+  }
+  return gfs;
+};
 
 // Function to upload image to GridFS
 const uploadImageToGridFS = (file) => {
@@ -19,14 +28,16 @@ const uploadImageToGridFS = (file) => {
     const filename = crypto.randomBytes(16).toString("hex") + file.originalname;
 
     // Create a write stream in GridFS
-    const writeStream = gridfsBucket.openUploadStream(filename);
+    const writeStream = gridfsBucket.openUploadStream(filename, {
+      contentType: file.mimeType,
+    });
 
     // Write the file buffer to GridFS
     writeStream.end(file.buffer);
 
     writeStream.on("finish", () => {
       // Return the generated file URL (or file ID for further use)
-      const imageUrl = `api/files/${filename}`; // You can adjust this URL to your API structure
+      const imageUrl = `${filename}`; // You can adjust this URL to your API structure
       resolve(imageUrl);
     });
 
@@ -36,4 +47,7 @@ const uploadImageToGridFS = (file) => {
   });
 };
 
-module.exports = { uploadImageToGridFS, gfs };
+module.exports = {
+  uploadImageToGridFS,
+  getGfs,
+};
