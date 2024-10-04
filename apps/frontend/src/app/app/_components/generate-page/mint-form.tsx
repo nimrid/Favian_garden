@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { cn } from '@/lib';
+import { cn, convertImageUrlToFileObject } from '@/lib';
 import { ChevronLeft } from 'lucide-react';
 import { PageTitle } from '../page-title';
 import { useWallet } from '@solana/wallet-adapter-react';
@@ -35,11 +35,13 @@ const formSchema = z.object({
 interface IMintFormProps {
   imageUrl: string;
   onClick?: () => void;
+  onClose?: () => void;
 }
 
 const MintForm: React.FC<IMintFormProps> = ({
   imageUrl,
   onClick = () => {},
+  onClose = () => {},
 }) => {
   const { publicKey } = useWallet();
 
@@ -63,15 +65,17 @@ const MintForm: React.FC<IMintFormProps> = ({
     try {
       const formData = new FormData();
 
+      // Converting the Image Url to a File
+      const imageFile =
+        (await convertImageUrlToFileObject(imageUrl)) || imageUrl;
+
       formData.append('name', values.name);
       formData.append('description', values.description);
       formData.append('attributes', JSON.stringify(values.attributes));
+      formData.append('image', imageFile);
+      formData.append('price', values.price);
+      formData.append('royaltyFee', values.perks ?? '3'); // TODO: (@vikram-2101) Is This really a thing?
       formData.append('walletAddress', publicKey?.toString() ?? 'null');
-      formData.append('price', values.price.toString());
-      formData.append('royaltyFee', `5`); // TODO: (@vikram-2101) Is This really a thing?
-      // just send the royaly fee as a number in backend i have divided it by 100
-      // in schema i have kept the data type of price as number
-      formData.append('file', imageUrl);
 
       const response = await fetch(config.MINT, {
         method: 'POST',
@@ -79,22 +83,27 @@ const MintForm: React.FC<IMintFormProps> = ({
       });
 
       if (!response.ok) {
+        toast({
+          title: 'Error Minting NFT',
+          description: 'Failed to mint NFT',
+          variant: 'destructive',
+        });
         throw new Error('Failed to mint NFT');
       }
 
-      const result = await response.json();
       // Maybe redirect to the My Creations Page
-      console.log('NFT minted successfully:', result);
       toast({
         title: 'NFT Minted Successfully',
         description: 'Your NFT has been minted!',
       });
+      onClose?.();
     } catch (error) {
       console.error('Error minting NFT:', error);
       if (error instanceof Error) {
         toast({
           title: 'Error Minting NFT',
           description: error.message,
+          variant: 'destructive',
         });
       }
     }
