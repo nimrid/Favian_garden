@@ -51,6 +51,7 @@ import MintForm from './_components/generate-page/mint-form';
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useWallet } from '@solana/wallet-adapter-react';
 const buttonLabels = [
   'Anime',
   '3D art',
@@ -104,6 +105,8 @@ export default function HomePage() {
     null
   );
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
+
+  const { publicKey } = useWallet();
 
   // Toast
   const { toast } = useToast();
@@ -338,8 +341,16 @@ export default function HomePage() {
                     color: '#0EDD48',
                   }}
                 >
-                  <PlusIcon className="w-5 h-5 mr-2" />
-                  Add Wallet
+                  {publicKey ? (
+                    <span className="max-w-[100px] overflow-hidden text-ellipsis">
+                      {publicKey?.toString()}
+                    </span>
+                  ) : (
+                    <>
+                      <PlusIcon className="w-5 h-5 mr-2" />
+                      Add Wallet
+                    </>
+                  )}
                 </WalletMultiButton>
               </TooltipTrigger>
               <TooltipContent>Add Wallet</TooltipContent>

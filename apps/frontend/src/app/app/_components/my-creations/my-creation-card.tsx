@@ -1,8 +1,8 @@
-import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
-import React from "react";
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import Image from 'next/image';
+import React from 'react';
 
 interface MyCreationCardProps {
   imageUrl: string;
@@ -33,7 +33,7 @@ export const MyCreationCard: React.FC<MyCreationCardProps> = ({
         <h3 className="text-muted-foreground">{label}</h3>
         <h5>{price}</h5>
       </div>
-      <Button size={"sm"} className="bg-accent-1 hover:bg-accent-1/80">
+      <Button size={'sm'} className="bg-accent-1 hover:bg-accent-1/80">
         View
       </Button>
     </div>

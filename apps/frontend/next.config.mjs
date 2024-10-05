@@ -4,9 +4,9 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'picsum.photos',
+        hostname: 'favian-garden.onrender.com',
         port: '',
-        pathname: '/id/**',
+        pathname: '/**',
       },
     ],
   },

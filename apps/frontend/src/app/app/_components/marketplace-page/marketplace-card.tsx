@@ -11,9 +11,8 @@ interface MarketPlaceCardProps {
   label: string;
   tag: string;
   price: string;
-  totalLikes: number;
+  totalLikes: number | string;
   liked: boolean;
-  createdBy: string;
   imageUrl: string;
   className?: string;
 }
@@ -25,13 +24,12 @@ export const MarketPlaceCard: React.FC<MarketPlaceCardProps> = (props) => {
       className={cn('rounded-md p-4 bg-muted sm:rounded-xl', props.className)}
     >
       <div className="flex items-center justify-between mb-2 sm:mb-1">
-        <h3 className="text-sm sm:text-base">{props.createdBy}</h3>
-        <Badge className="sm:px-4">{props.tag}</Badge>
+        <Badge className="sm:px-4 capitalize">{props.tag}</Badge>
       </div>
 
       <AspectRatio ratio={5 / 4} className="flex items-center justify-center">
         <Image
-          src={props.imageUrl}
+          src={props.imageUrl ?? ''}
           alt={props.label}
           width={238}
           height={193}
