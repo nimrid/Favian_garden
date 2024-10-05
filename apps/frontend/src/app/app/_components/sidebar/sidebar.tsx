@@ -15,13 +15,18 @@ import {
 } from '@/components/ui/alert-dialog';
 
 import { Button, buttonVariants } from '@/components/ui/button';
-import { cn } from '@/lib';
-import SidebarCard from './sidebar-card';
-import { usePathname } from 'next/navigation';
-import { Routes } from '@/types';
-import TopSellersCard from './top-sellers-card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { config } from '@/config';
 import { topSellers } from '@/constant';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib';
+import { Routes } from '@/types';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { usePathname } from 'next/navigation';
+import SidebarCard from './sidebar-card';
+import TopSellersCard from './top-sellers-card';
 
 type GenerateHistory = {
   title: string;
@@ -52,6 +57,37 @@ const generateHistories: GenerateHistory[] = [
 
 export const SideBarComponent = () => {
   const pathname = usePathname();
+  const { publicKey } = useWallet();
+  const { toast } = useToast();
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['recent'],
+    queryFn: async () => {
+      try {
+        const response = await axios.get(
+          `${config.RECENT}/${publicKey?.toString()}`
+        );
+        if (response.status === 200) {
+          return response.data;
+        }
+
+        return response;
+      } catch (error) {
+        console.error('Error getting recent info: ', error);
+        if (error instanceof Error) {
+          toast({
+            title: 'Error Getting Recent Info',
+            description: error.message,
+            variant: 'destructive',
+          });
+          throw error;
+        }
+      }
+    },
+    enabled: publicKey ? true : false,
+  });
+
+  console.log('Data: ', data, isLoading);
 
   return (
     <ScrollArea className="w-full h-screen">
