@@ -205,19 +205,18 @@ const MarketPage = () => {
                 likes?: string;
                 liked?: string;
                 uri?: string;
-                mintAddress: string;
               }) => (
                 <MarketPlaceCard
                   className={cn('col-span-4')}
                   key={c?._id}
                   id={c?.mintAddress ?? ''}
+                  mintAddress={c?.mintAddress ?? ''}
                   label={c?.name ?? ''}
                   tag={c?.typeOfNFT ?? ''}
                   price={c?.price ?? ''}
                   totalLikes={c?.likes ?? ''}
                   liked={!!c?.liked}
                   imageUrl={`${config.IMAGES}/${c?.uri}`}
-                  
                 />
               )
             )}
