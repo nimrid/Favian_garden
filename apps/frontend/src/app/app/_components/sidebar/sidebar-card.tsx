@@ -1,5 +1,5 @@
-import { cn } from "@/lib";
-import React from "react";
+import { cn } from '@/lib';
+import React from 'react';
 
 interface SidebarCardProps {
   title: string;
@@ -12,7 +12,10 @@ export const SidebarCard: React.FC<SidebarCardProps> = ({
   ...props
 }) => {
   return (
-    <div className={cn("border border-border-1 rounded-xl p-3")} {...props}>
+    <div
+      className={cn('border border-border-1 max-w-fit rounded-xl p-3')}
+      {...props}
+    >
       <h6 className="w-full text-ellipsis overflow-hidden whitespace-nowrap text-xl text-white/60">
         {title}
       </h6>
