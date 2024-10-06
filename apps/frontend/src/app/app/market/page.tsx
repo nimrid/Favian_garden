@@ -205,6 +205,7 @@ const MarketPage = () => {
                 likes?: string;
                 liked?: string;
                 uri?: string;
+                mintAddress: string;
               }) => (
                 <MarketPlaceCard
                   className={cn('col-span-4')}
@@ -216,6 +217,7 @@ const MarketPage = () => {
                   totalLikes={c?.likes ?? ''}
                   liked={!!c?.liked}
                   imageUrl={`${config.IMAGES}/${c?.uri}`}
+                  
                 />
               )
             )}

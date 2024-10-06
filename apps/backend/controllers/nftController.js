@@ -273,7 +273,9 @@ const purchaseNFT = async (req, res) => {
   const { mintAddress, buyerWalletAddress, price } = req.body;
   // Convert price back to a number
   const parsedPrice = Number(price);
+  // Trim the mintAddress to remove any whitespac
 
+  // Convert mintAddress to ObjectI
   if (isNaN(parsedPrice)) {
     return res.status(400).json({
       success: false,
@@ -286,11 +288,10 @@ const purchaseNFT = async (req, res) => {
       message: "Mint address, buyer wallet address, and price are required.",
     });
   }
-
   try {
     // Step 1: Retrieve the NFT from the database
-    const nft = await NFT.findOne({ mintAddress });
-
+    const nft = await NFT.findOne({ mintAddress }); // Correctly using findById
+    console.log(nft);
     if (!nft) {
       return res
         .status(404)
