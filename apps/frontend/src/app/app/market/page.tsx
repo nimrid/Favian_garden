@@ -197,6 +197,7 @@ const MarketPage = () => {
             {data?.map(
               (c: {
                 _id?: string;
+                walletAddress?: string;
                 name?: string;
                 typeOfNFT?: string;
                 price?: string;
@@ -207,7 +208,7 @@ const MarketPage = () => {
                 <MarketPlaceCard
                   className={cn('col-span-4')}
                   key={c?._id}
-                  id={c?._id ?? ''}
+                  id={c?.walletAddress ?? ''}
                   label={c?.name ?? ''}
                   tag={c?.typeOfNFT ?? ''}
                   price={c?.price ?? ''}
