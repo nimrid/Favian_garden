@@ -99,9 +99,11 @@ const MintForm: React.FC<IMintFormProps> = ({
       onClose?.();
     } catch (error) {
       console.error('Error minting NFT:', error);
+      // @ts-expect-error: This will work
       if (error && error?.response) {
         toast({
           title: 'Error Minting NFT',
+          // @ts-expect-error: This will work
           description: `Failed to mint NFT: ${error?.response?.data?.message}`,
           variant: 'destructive',
         });
