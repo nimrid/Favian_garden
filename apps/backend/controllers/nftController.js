@@ -139,6 +139,14 @@ const mintNFT = async (req, res) => {
     const { name, description, attributes, walletAddress, price, royaltyFee } =
       req.body;
 
+    // Convert it to a number
+    const royaltyFeeNumber = Number(royaltyFee); // or use parseFloat(royaltyFee) if you're dealing with decimal values
+
+    // Handle invalid number case
+    if (isNaN(royaltyFeeNumber)) {
+      return res.status(400).json({ error: "Invalid royalty fee value" });
+    }
+
     const imageUrl = (await uploadImageToGridFS(req.file)).trim();
     if (!imageUrl || typeof imageUrl !== "string") {
       throw new Error("Invalid image URL");
@@ -188,7 +196,7 @@ const mintNFT = async (req, res) => {
       creators: null,
       description,
       price: price,
-      royaltyFee: royaltyFee,
+      royaltyFee: royaltyFeeNumber,
       walletAddress: walletAddress,
       attributes: attributes,
       mintAddress,
@@ -206,7 +214,7 @@ const mintNFT = async (req, res) => {
       maxSupply: 1,
       mint: mintAddress,
       price: metadata.price,
-      royaltyFee: metadata.royaltyFee,
+      royaltyFee: metadata.royaltyFeeNumber,
       attributes: metadata.attributes,
       mintAddress,
     });
@@ -221,7 +229,7 @@ const mintNFT = async (req, res) => {
       createdAt: new Date(),
       walletAddress: metadata.walletAddress,
       price: metadata.price,
-      royaltyFee: metadata.royaltyFee,
+      royaltyFee: metadata.royaltyFeeNumber,
       attributes: metadata.attributes,
     };
 
