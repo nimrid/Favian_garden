@@ -57,9 +57,13 @@ export const MarketPlaceCard: React.FC<MarketPlaceCardProps> = (props) => {
         },
         onError: (error) => {
           console.error('Purchase failed', error);
+
+          // @ts-expect-error: This will be there
+          const message = error?.response?.data?.message || error.message;
+
           toast({
-            title: 'Error',
-            description: 'Failed to purchase NFT. Please try again later.',
+            title: 'Failed to purchase NFT. Please try again later.',
+            description: message,
             variant: 'destructive',
           });
         },
