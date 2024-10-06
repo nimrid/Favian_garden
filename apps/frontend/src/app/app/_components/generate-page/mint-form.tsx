@@ -63,40 +63,48 @@ const MintForm: React.FC<IMintFormProps> = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const formData = new FormData();
+      if (publicKey) {
+        const formData = new FormData();
 
-      // Converting the Image Url to a File
-      const imageFile =
-        (await convertImageUrlToFileObject(imageUrl)) || imageUrl;
+        // Converting the Image Url to a File
+        const imageFile =
+          (await convertImageUrlToFileObject(imageUrl)) || imageUrl;
 
-      formData.append('name', values.name);
-      formData.append('description', values.description);
-      formData.append('attributes', JSON.stringify(values.attributes));
-      formData.append('image', imageFile);
-      formData.append('price', values.price);
-      formData.append('royaltyFee', '5'); // TODO: (@vikram-2101) Is This really a thing?
-      formData.append('walletAddress', publicKey?.toString() ?? 'null');
+        formData.append('name', values.name);
+        formData.append('description', values.description);
+        formData.append('attributes', JSON.stringify(values.attributes));
+        formData.append('image', imageFile);
+        formData.append('price', values.price);
+        formData.append('royaltyFee', '5'); // TODO: (@vikram-2101) Is This really a thing?
+        formData.append('walletAddress', publicKey?.toString() ?? 'null');
 
-      const response = await fetch(config.MINT, {
-        method: 'POST',
-        body: formData,
-      });
+        const response = await fetch(config.MINT, {
+          method: 'POST',
+          body: formData,
+        });
 
-      if (!response.ok) {
+        if (!response.ok) {
+          toast({
+            title: 'Error Minting NFT',
+            description: 'Failed to mint NFT',
+            variant: 'destructive',
+          });
+          throw new Error('Failed to mint NFT');
+        }
+
+        // Maybe redirect to the My Creations Page
         toast({
-          title: 'Error Minting NFT',
-          description: 'Failed to mint NFT',
+          title: 'NFT Minted Successfully',
+          description: 'Your NFT has been minted!',
+        });
+        onClose?.();
+      } else {
+        toast({
+          title: 'Error Connecting Wallet',
+          description: 'Please connect your wallet to mint an NFT.',
           variant: 'destructive',
         });
-        throw new Error('Failed to mint NFT');
       }
-
-      // Maybe redirect to the My Creations Page
-      toast({
-        title: 'NFT Minted Successfully',
-        description: 'Your NFT has been minted!',
-      });
-      onClose?.();
     } catch (error) {
       console.error('Error minting NFT:', error);
       // @ts-expect-error: This will work
