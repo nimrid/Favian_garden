@@ -1,18 +1,30 @@
 'use client';
 
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { config } from '@/config';
-import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { Heart, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { config } from '@/config';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib';
+
 interface MarketPlaceCardProps {
+  id: string;
   mintAddress: string;
   label: string;
   tag: string;
@@ -24,8 +36,13 @@ interface MarketPlaceCardProps {
 }
 
 export const MarketPlaceCard: React.FC<MarketPlaceCardProps> = (props) => {
+  // Wallet
   const { publicKey } = useWallet();
 
+  // React Query
+  const queryClient = useQueryClient();
+
+  // Toast
   const { toast } = useToast();
 
   const mutation = useMutation({
@@ -47,9 +64,9 @@ export const MarketPlaceCard: React.FC<MarketPlaceCardProps> = (props) => {
         buyerWalletAddress: publicKey?.toString(),
         price: props.price,
       };
-      console.log(payload);
       mutation.mutate(payload, {
         onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['marketplace'] });
           toast({
             title: 'Success',
             description: 'NFT purchased successfully!',
@@ -110,21 +127,51 @@ export const MarketPlaceCard: React.FC<MarketPlaceCardProps> = (props) => {
           <p className="text-xs">{props.totalLikes}</p>
         </div>
 
-        <Button
-          variant={'primary'}
-          size={'sm'}
-          className="text-background-1 h-6 sm:h-9"
-          disabled={mutation.isPending}
-          onClick={handlePurchaseNft}
-        >
-          {mutation.isPending ? (
-            <span>
-              <Loader2 className="w-4 h-4 animate-spin" />
-            </span>
-          ) : (
-            <span>Purchase</span>
-          )}
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button
+              variant={'primary'}
+              size={'sm'}
+              className="text-background-1 h-6 sm:h-9"
+              disabled={mutation.isPending}
+            >
+              Purchase
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Proceed with Purchase: {props.label}</DialogTitle>
+              <DialogDescription>
+                For this purchase, we will only charge Devnet SOL.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button
+                  variant={'secondary'}
+                  size={'sm'}
+                  className="text-primary h-6 sm:h-9"
+                >
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button
+                variant={'primary'}
+                size={'sm'}
+                className="text-background-1 h-6 sm:h-9"
+                disabled={mutation.isPending}
+                onClick={handlePurchaseNft}
+              >
+                {mutation.isPending && (
+                  <span className="mr-2">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  </span>
+                )}
+                <span>Continue</span>
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
