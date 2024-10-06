@@ -13,7 +13,6 @@ import Image from 'next/image';
 import React from 'react';
 
 interface MarketPlaceCardProps {
-  
   mintAddress: string;
   label: string;
   tag: string;
