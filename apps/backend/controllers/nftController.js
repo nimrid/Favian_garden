@@ -439,10 +439,71 @@ const getImage = async (req, res) => {
     });
   }
 };
+
+const confirmPurchase = async (req, res) => {
+  const { signedTransaction, buyerPrivateKey } = req.body;
+
+  if (!signedTransaction || !buyerPrivateKey) {
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message: "Signed transaction and buyer private key are required.",
+      });
+  }
+
+  try {
+    // Convert the signed transaction back from base64
+    const transaction = Transaction.from(
+      Buffer.from(signedTransaction, "base64")
+    );
+
+    // Create a keypair from the buyer's private key
+    const buyerKeypair = Keypair.fromSecretKey(
+      new Uint8Array(JSON.parse(buyerPrivateKey))
+    );
+
+    // Send the transaction and wait for confirmation
+    const signature = await connection.sendTransaction(
+      transaction,
+      [buyerKeypair],
+      { skipPreflight: false, preflightCommitment: "confirmed" }
+    );
+    await connection.confirmTransaction(signature, "confirmed");
+
+    // Mark NFT as sold in the database
+    const nft = await NFT.findOneAndUpdate(
+      { mintAddress: transaction.instructions[0].keys[0].pubkey.toBase58() },
+      { isSold: true }
+    );
+
+    if (!nft) {
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "NFT not found for marking as sold.",
+        });
+    }
+
+    return res.json({
+      success: true,
+      message: "Purchase completed successfully.",
+      signature,
+    });
+  } catch (error) {
+    console.error("Transaction confirmation error:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Transaction confirmation failed." });
+  }
+};
+
 module.exports = {
   purchaseNFT,
   getAllNFTs,
   mintNFT,
   recentNFTs,
   getImage,
+  confirmPurchase,
 };
