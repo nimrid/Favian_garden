@@ -13,7 +13,7 @@ import Image from 'next/image';
 import React from 'react';
 
 interface MarketPlaceCardProps {
-  key: string | number;
+  
   mintAddress: string;
   label: string;
   tag: string;
@@ -76,7 +76,7 @@ export const MarketPlaceCard: React.FC<MarketPlaceCardProps> = (props) => {
 
   return (
     <div
-      key={props.key}
+      key={props.mintAddress}
       className={cn('rounded-md p-4 bg-muted sm:rounded-xl', props.className)}
     >
       <div className="flex items-center justify-between mb-2">
