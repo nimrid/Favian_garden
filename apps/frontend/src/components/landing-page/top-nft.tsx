@@ -1,5 +1,5 @@
-import MarketPlaceCard from "@/app/app/_components/marketplace-page/marketplace-card";
-import { marketPlaceNFTs } from "@/constant";
+import MarketPlaceCard from '@/app/app/_components/marketplace-page/marketplace-card';
+import { marketPlaceNFTs } from '@/constant';
 
 export const TopNFTSection = () => {
   // TODO: API Call
@@ -23,7 +23,6 @@ export const TopNFTSection = () => {
               totalLikes={c.totalLikes}
               liked={c.liked}
               imageUrl={c.image}
-              createdBy={c.createdBy}
             />
           ))}
       </div>
