@@ -1,8 +1,8 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight } from 'lucide-react';
 
-import MarketPlaceCard from "@/app/app/_components/marketplace-page/marketplace-card";
-import { marketPlaceNFTs } from "@/constant";
-import { Button } from "../ui/button";
+import MarketPlaceCard from '@/app/app/_components/marketplace-page/marketplace-card';
+import { marketPlaceNFTs } from '@/constant';
+import { Button } from '../ui/button';
 
 export const RecentlyAddedNftsSection = () => {
   return (
@@ -25,15 +25,14 @@ export const RecentlyAddedNftsSection = () => {
                 totalLikes={c.totalLikes}
                 liked={c.liked}
                 imageUrl={c.image}
-                createdBy={c.createdBy}
               />
             ))}
         </div>
 
         <div className="w-fit flex items-center justify-end">
           <Button
-            variant={"secondary"}
-            size={"icon"}
+            variant={'secondary'}
+            size={'icon'}
             className="bg-accent-1/50 rounded-full"
           >
             <ChevronRight className="w-4 h-4" />
