@@ -1,8 +1,14 @@
-import { AspectRatio } from '@/components/ui/aspect-ratio';
+'use client';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { config } from '@/config';
+import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib';
-import { Heart } from 'lucide-react';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import { Heart, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 
@@ -18,23 +24,71 @@ interface MarketPlaceCardProps {
 }
 
 export const MarketPlaceCard: React.FC<MarketPlaceCardProps> = (props) => {
+  const { publicKey } = useWallet();
+
+  const { toast } = useToast();
+
+  const mutation = useMutation({
+    mutationKey: ['marketplace', publicKey?.toString()],
+    mutationFn: async (payload: {
+      mintAddress: string;
+      buyerWalletAddress: string;
+      price: string;
+    }) => {
+      const response = await axios.post(`${config.PURCHASE}`, payload);
+      return response.data;
+    },
+  });
+
+  const handlePurchaseNft = async () => {
+    if (publicKey) {
+      const payload = {
+        mintAddress: String(props.id),
+        buyerWalletAddress: publicKey?.toString(),
+        price: props.price,
+      };
+
+      mutation.mutate(payload, {
+        onSuccess: () => {
+          toast({
+            title: 'Success',
+            description: 'NFT purchased successfully!',
+          });
+        },
+        onError: (error) => {
+          console.error('Purchase failed', error);
+          toast({
+            title: 'Error',
+            description: 'Failed to purchase NFT. Please try again later.',
+            variant: 'destructive',
+          });
+        },
+      });
+    } else {
+      toast({
+        title: 'Error',
+        description: 'Please connect your wallet to purchase NFTs.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <div
       key={props.id}
       className={cn('rounded-md p-4 bg-muted sm:rounded-xl', props.className)}
     >
-      <div className="flex items-center justify-between mb-2 sm:mb-1">
+      <div className="flex items-center justify-between mb-2">
         <Badge className="sm:px-4 capitalize">{props.tag}</Badge>
       </div>
 
-      <AspectRatio ratio={5 / 4} className="flex items-center justify-center">
-        <Image
-          src={props.imageUrl ?? ''}
-          alt={props.label}
-          width={238}
-          height={193}
-        />
-      </AspectRatio>
+      <Image
+        src={props.imageUrl ?? ''}
+        alt={props.label}
+        width={238}
+        height={193}
+        className="object-contain max-w-[238px] max-h-[193px] overflow-hidden rounded-xl"
+      />
 
       <div className="mt-2 flex items-center justify-between font-[600] text-xs sm:text-base">
         <h2 className="text-muted-foreground">{props.label}</h2>
@@ -56,8 +110,16 @@ export const MarketPlaceCard: React.FC<MarketPlaceCardProps> = (props) => {
           variant={'primary'}
           size={'sm'}
           className="text-background-1 h-6 sm:h-9"
+          disabled={mutation.isPending}
+          onClick={handlePurchaseNft}
         >
-          Purchase
+          {mutation.isPending ? (
+            <span>
+              <Loader2 className="w-4 h-4 animate-spin" />
+            </span>
+          ) : (
+            <span>Purchase</span>
+          )}
         </Button>
       </div>
     </div>

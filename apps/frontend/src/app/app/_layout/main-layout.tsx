@@ -33,16 +33,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, ...props }) => {
           >
             <MenuBarComponent />
           </ResizablePanel>
-
           {/* First Handle */}
           <ResizableHandle />
-
           {/* Body */}
           <ResizablePanel defaultSize={63}>{children}</ResizablePanel>
-
           {/* Second Handle */}
           <ResizableHandle />
-
           {/* Right Side Bar */}
           <ResizablePanel
             defaultSize={width <= screens.xl ? 0 : 20}
