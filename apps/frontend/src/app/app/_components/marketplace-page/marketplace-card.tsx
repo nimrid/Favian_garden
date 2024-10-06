@@ -13,7 +13,8 @@ import Image from 'next/image';
 import React from 'react';
 
 interface MarketPlaceCardProps {
-  id: string | number;
+  key: string | number;
+  mintAddress: string;
   label: string;
   tag: string;
   price: string;
@@ -43,11 +44,11 @@ export const MarketPlaceCard: React.FC<MarketPlaceCardProps> = (props) => {
   const handlePurchaseNft = async () => {
     if (publicKey) {
       const payload = {
-        mintAddress: String(props.id),
+        mintAddress: String(props.mintAddress),
         buyerWalletAddress: publicKey?.toString(),
         price: props.price,
       };
-
+      console.log(payload);
       mutation.mutate(payload, {
         onSuccess: () => {
           toast({
@@ -75,7 +76,7 @@ export const MarketPlaceCard: React.FC<MarketPlaceCardProps> = (props) => {
 
   return (
     <div
-      key={props.id}
+      key={props.key}
       className={cn('rounded-md p-4 bg-muted sm:rounded-xl', props.className)}
     >
       <div className="flex items-center justify-between mb-2">
