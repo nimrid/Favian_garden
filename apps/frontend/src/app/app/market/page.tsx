@@ -208,7 +208,7 @@ const MarketPage = () => {
                 <MarketPlaceCard
                   className={cn('col-span-4')}
                   key={c?._id}
-                  id={c?.walletAddress ?? ''}
+                  id={c?._id ?? ''}
                   label={c?.name ?? ''}
                   tag={c?.typeOfNFT ?? ''}
                   price={c?.price ?? ''}
