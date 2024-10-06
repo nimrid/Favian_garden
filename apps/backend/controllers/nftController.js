@@ -40,7 +40,7 @@ const metaplex = Metaplex.make(connection)
     irysStorage({
       address: "https://node1.irys.network",
       providerUrl: "https://api.devnet.solana.com",
-      timeout: 6000,
+      timeout: 1000,
     })
   );
 
@@ -230,8 +230,19 @@ const mintNFT = async (req, res) => {
 
     res.status(201).json({ success: true, nft, dbId: result._id });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Error occurred while minting NFT:", error);
+
+    // Check for insufficient lamports error
+    if (error.message.includes("insufficient lamports")) {
+      res.status(400).json({
+        success: false,
+        message:
+          "Transaction failed due to insufficient lamports. Please ensure your wallet has enough SOL to complete the transaction.",
+      });
+    } else {
+      // Handle other errors
+      res.status(500).json({ success: false, message: error.message });
+    }
   }
 };
 
