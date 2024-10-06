@@ -74,7 +74,7 @@ const MintForm: React.FC<IMintFormProps> = ({
       formData.append('attributes', JSON.stringify(values.attributes));
       formData.append('image', imageFile);
       formData.append('price', values.price);
-      formData.append('royaltyFee', values.perks ?? '3'); // TODO: (@vikram-2101) Is This really a thing?
+      formData.append('royaltyFee', '5'); // TODO: (@vikram-2101) Is This really a thing?
       formData.append('walletAddress', publicKey?.toString() ?? 'null');
 
       const response = await fetch(config.MINT, {
