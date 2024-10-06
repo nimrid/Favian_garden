@@ -22,10 +22,11 @@ import {
 import { config } from '@/config';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib';
+import { useRouter } from 'next/navigation';
 
 interface MarketPlaceCardProps {
-  id: string;
-  mintAddress: string;
+  id: string | number;
+  mintAddress?: string;
   label: string;
   tag: string;
   price: string;
@@ -36,6 +37,9 @@ interface MarketPlaceCardProps {
 }
 
 export const MarketPlaceCard: React.FC<MarketPlaceCardProps> = (props) => {
+  // Router
+  const router = useRouter();
+
   // Wallet
   const { publicKey } = useWallet();
 
@@ -58,7 +62,9 @@ export const MarketPlaceCard: React.FC<MarketPlaceCardProps> = (props) => {
   });
 
   const handlePurchaseNft = async () => {
-    if (publicKey) {
+    if (!props.mintAddress) {
+      router.push('/app/market');
+    } else if (publicKey) {
       const payload = {
         mintAddress: String(props.mintAddress),
         buyerWalletAddress: publicKey?.toString(),
