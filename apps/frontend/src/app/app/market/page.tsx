@@ -2,22 +2,22 @@
 
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { marketPlaceNFTs } from '@/constant';
-import { cn } from '@/lib';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
-import { ChevronRight, Filter, Loader2, PlusIcon, X } from 'lucide-react';
-import * as React from 'react';
-import MarketPlaceCard from '../_components/marketplace-page/marketplace-card';
-import SearchBox from '../_components/search-box';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { useQuery } from '@tanstack/react-query';
-import { useToast } from '@/hooks/use-toast';
-import axios from 'axios';
 import { config } from '@/config';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { ChevronRight, Filter, Loader2, PlusIcon, X } from 'lucide-react';
+import * as React from 'react';
+import MarketPlaceCard from '../_components/marketplace-page/marketplace-card';
+import SearchBox from '../_components/search-box';
+import { useWallet } from '@solana/wallet-adapter-react';
 
 const filterOptionsData = [
   {
@@ -53,6 +53,10 @@ const MarketPage = () => {
     ...filterOptionsData,
   ]);
 
+  // Wallet
+  const { publicKey } = useWallet();
+
+  // Toast
   const { toast } = useToast();
 
   // Query Client
@@ -78,9 +82,8 @@ const MarketPage = () => {
         throw error;
       }
     },
+    staleTime: 3 * 60 * 1000, // 3 minute
   });
-
-  console.log('Data: ', data);
 
   const handleShowAllButtons = async () => {
     if (visibleAllFilters) {
@@ -123,8 +126,16 @@ const MarketPage = () => {
                   color: '#0EDD48',
                 }}
               >
-                <PlusIcon className="w-5 h-5 mr-2" />
-                Add Wallet
+                {publicKey ? (
+                  <span className="text-ellipsis max-w-[100px] overflow-hidden">
+                    {publicKey?.toString()}
+                  </span>
+                ) : (
+                  <>
+                    <PlusIcon className="w-5 h-5 mr-2" />
+                    Add Wallet
+                  </>
+                )}
               </WalletMultiButton>
             </TooltipTrigger>
             <TooltipContent>Add Wallet</TooltipContent>
@@ -183,20 +194,29 @@ const MarketPage = () => {
           </section>
         ) : (
           <section className="grid grid-cols-12 gap-5 mt-8">
-            {marketPlaceNFTs?.map((c) => (
-              <MarketPlaceCard
-                className={cn('col-span-4')}
-                key={c.id}
-                id={c.id}
-                label={c.label}
-                tag={c.tag}
-                price={c.price}
-                totalLikes={c.totalLikes}
-                liked={c.liked}
-                imageUrl={c.image}
-                createdBy={c.createdBy}
-              />
-            ))}
+            {data?.map(
+              (c: {
+                _id?: string;
+                name?: string;
+                typeOfNFT?: string;
+                price?: string;
+                likes?: string;
+                liked?: string;
+                uri?: string;
+              }) => (
+                <MarketPlaceCard
+                  className={cn('col-span-4')}
+                  key={c?._id}
+                  id={c?._id ?? ''}
+                  label={c?.name ?? ''}
+                  tag={c?.typeOfNFT ?? ''}
+                  price={c?.price ?? ''}
+                  totalLikes={c?.likes ?? ''}
+                  liked={!!c?.liked}
+                  imageUrl={`${config.IMAGES}/${c?.uri}`}
+                />
+              )
+            )}
           </section>
         )}
       </main>
