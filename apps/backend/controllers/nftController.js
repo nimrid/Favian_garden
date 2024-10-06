@@ -138,7 +138,6 @@ const mintNFT = async (req, res) => {
   try {
     const { name, description, attributes, walletAddress, price, royaltyFee } =
       req.body;
-
     // Convert it to a number
     const royaltyFeeNumber = Number(royaltyFee); // or use parseFloat(royaltyFee) if you're dealing with decimal values
 
@@ -229,7 +228,7 @@ const mintNFT = async (req, res) => {
       createdAt: new Date(),
       walletAddress: metadata.walletAddress,
       price: metadata.price,
-      royaltyFee: metadata.royaltyFeeNumber,
+      royaltyFee: 5,
       attributes: metadata.attributes,
     };
 
