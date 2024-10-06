@@ -271,11 +271,8 @@ const getAllNFTs = async (req, res) => {
 const purchaseNFT = async (req, res) => {
   console.log(req.body);
   const { mintAddress, buyerWalletAddress, price } = req.body;
-  // Convert price back to a number
-  const parsedPrice = Number(price);
-  // Trim the mintAddress to remove any whitespac
+  const parsedPrice = Math.floor(Number(price)); // Ensure price is an integer
 
-  // Convert mintAddress to ObjectI
   if (isNaN(parsedPrice)) {
     return res.status(400).json({
       success: false,
@@ -290,7 +287,7 @@ const purchaseNFT = async (req, res) => {
   }
   try {
     // Step 1: Retrieve the NFT from the database
-    const nft = await NFT.findOne({ mintAddress }); // Correctly using findById
+    const nft = await NFT.findOne({ mintAddress });
     console.log(nft);
     if (!nft) {
       return res
@@ -310,33 +307,37 @@ const purchaseNFT = async (req, res) => {
     const buyerPubKey = new PublicKey(buyerWalletAddress);
     const sellerPubKey = new PublicKey(nft.walletAddress);
 
-    // Calculate royalty fee
-    const royaltyAmount = (nft.royaltyFee / 100) * price;
-    const sellerAmount = price - royaltyAmount;
+    // Calculate royalty fee and seller amount in lamports
+    const royaltyAmount = Math.floor((nft.royaltyFee / 100) * parsedPrice);
+    const sellerAmount = parsedPrice - royaltyAmount;
 
     // Step 2: Connect to Solana cluster
     const connection = new Connection(
-      clusterApiUrl("mainnet-beta"),
+      clusterApiUrl("devnet"), // Make sure to use devnet for testing
       "confirmed"
     );
 
     // ** Check buyer's wallet balance **
     const buyerBalance = await connection.getBalance(buyerPubKey);
-
-    // Check if the buyer has enough balance to cover price + transaction fees
     const transactionFeeBuffer = 5000; // A small buffer for transaction fees
-    if (buyerBalance < price + transactionFeeBuffer) {
+
+    if (buyerBalance < parsedPrice + transactionFeeBuffer) {
       return res.status(400).json({
         success: false,
         message: `Insufficient funds. Buyer balance is ${
           buyerBalance / 1_000_000_000
-        } SOL, but ${price / 1_000_000_000} SOL is required.`,
+        } SOL, but ${parsedPrice / 1_000_000_000} SOL is required.`,
       });
     }
 
-    // Step 3: Create transaction to transfer funds (unsigned)
-    const transaction = new Transaction()
-      // Transfer royalty to the creator's wallet
+    // Step 3: Fetch the recent blockhash
+    const { blockhash } = await connection.getLatestBlockhash();
+
+    // Create transaction to transfer funds (unsigned)
+    const transaction = new Transaction({
+      recentBlockhash: blockhash,
+      feePayer: buyerPubKey,
+    })
       .add(
         SystemProgram.transfer({
           fromPubkey: buyerPubKey, // Buyer's wallet as PublicKey
@@ -344,7 +345,6 @@ const purchaseNFT = async (req, res) => {
           lamports: royaltyAmount, // Royalty amount in lamports
         })
       )
-      // Transfer remaining amount to the seller's wallet
       .add(
         SystemProgram.transfer({
           fromPubkey: buyerPubKey, // Buyer's wallet as PublicKey
