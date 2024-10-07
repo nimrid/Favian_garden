@@ -7,6 +7,7 @@ const {
   keypairIdentity,
   irysStorage,
 } = require("@metaplex-foundation/js");
+const bs58 = require("bs58"); // Ensure bs58 is imported
 
 const {
   Keypair,
@@ -431,83 +432,72 @@ const getImage = async (req, res) => {
     });
   }
 };
-const bs58 = require("bs58"); // Import the bs58 library for encoding
-
+const base58 = require("base-58");
 const confirmAndTransferNFT = async (req, res) => {
   const { signature, mintAddress, buyerWalletAddress } = req.body;
   console.log(req.body);
 
   try {
-    // Step 1: Check if the signature is in Buffer format and convert it to a base58-encoded string
-    let signatureString;
+    // Check if signature is in the correct format
     if (signature?.type === "Buffer" && Array.isArray(signature.data)) {
-      signatureString = bs58.encode(Buffer.from(signature.data));
+      // Encode the signature to base58
+      // Encode the signature to base58 using the base-58 library
+      const signatureBuffer = Buffer.from(signature.data); // Create a Buffer from the data
+      const signatureString = base58.encode(signatureBuffer); // Encode to base58
+
+      // Confirm the transaction using the base58-encoded signature
+      const confirmation = await connection.confirmTransaction(
+        signatureString,
+        "confirmed"
+      );
+
+      if (confirmation?.value?.err) {
+        return res.status(500).json({
+          success: false,
+          message: "Transaction confirmation failed.",
+          error: confirmation.value.err,
+        });
+      }
+
+      // Retrieve the NFT object using the mint address
+      const nftObj = await metaplex
+        .nfts()
+        .findByMint({ mintAddress: new PublicKey(mintAddress) });
+
+      if (!nftObj) {
+        return res.status(500).json({
+          success: false,
+          message: "Failed to retrieve NFT object using the mint address.",
+        });
+      }
+
+      // Transfer the NFT to the buyer's wallet
+      const transferResponse = await metaplex.nfts().transfer({
+        nftOrSft: nftObj,
+        toOwner: new PublicKey(buyerWalletAddress), // Buyer's wallet
+      });
+
+      // Mark the NFT as sold in the database
+      await NFT.findOneAndUpdate({ mintAddress }, { isSold: true });
+
+      return res.json({
+        success: true,
+        message: "NFT transferred to buyer successfully.",
+        transactionId: transferResponse.signature,
+      });
     } else {
       return res.status(400).json({
         success: false,
         message: "Invalid signature format. Expected a Buffer object.",
       });
     }
-
-    // Step 2: Confirm the transaction using the base58-encoded signature
-    const confirmation = await connection.confirmTransaction(
-      signatureString,
-      "confirmed"
-    );
-    if (confirmation?.value?.err) {
-      return res.status(500).json({
-        success: false,
-        message: "Transaction confirmation failed.",
-        error: confirmation.value.err,
-      });
-    }
-
-    // Step 3: Retrieve the NFT object using the mint address
-    const nftObj = await metaplex
-      .nfts()
-      .findByMint({ mintAddress: new PublicKey(mintAddress) });
-
-    if (!nftObj) {
-      return res.status(500).json({
-        success: false,
-        message: "Failed to retrieve NFT object using the mint address.",
-      });
-    }
-
-    // Step 4: Transfer the NFT to the buyer's wallet
-    let transferResponse;
-    try {
-      transferResponse = await metaplex.nfts().transfer({
-        nftOrSft: nftObj,
-        toOwner: new PublicKey(buyerWalletAddress), // Buyer's wallet
-      });
-    } catch (transferError) {
-      console.error("NFT Transfer Error:", transferError);
-      return res.status(500).json({
-        success: false,
-        message:
-          "NFT transfer failed. Unable to estimate transaction fees or execute transfer.",
-        error: transferError.message || transferError,
-      });
-    }
-
-    // Step 5: Mark the NFT as sold in the database
-    await NFT.findOneAndUpdate({ mintAddress }, { isSold: true });
-
-    return res.json({
-      success: true,
-      message: "NFT transferred to buyer successfully.",
-      transactionId: transferResponse.signature, // The transaction ID of the NFT transfer
-    });
   } catch (error) {
     console.error("Transfer error:", error);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "NFT transfer failed.",
-        error: error.message || error,
-      });
+    return res.status(500).json({
+      success: false,
+      message: "NFT transfer failed.",
+      error: error.message || error,
+    });
   }
 };
 

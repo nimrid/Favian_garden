@@ -51,6 +51,12 @@ importers:
       axios:
         specifier: ^1.7.7
         version: 1.7.7(debug@4.3.7)
+      base-58:
+        specifier: ^0.0.1
+        version: 0.0.1
+      base-x:
+        specifier: ^5.0.0
+        version: 5.0.0
       bs58:
         specifier: ^6.0.0
         version: 6.0.0
@@ -3322,6 +3328,9 @@ packages:
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
+
+  base-58@0.0.1:
+    resolution: {integrity: sha512-denlKTnozZTVWuh1QkbXf10kkFNc+0/eno29RR+6g5al0yGI+iAOFt/cIA2tvnKoADlUFLZHs50ZdWF+c9WBnw==}
 
   base-x@3.0.10:
     resolution: {integrity: sha512-7d0s06rR9rYaIWHkpfLIFICM/tkSVdoPC9qYAQRpxn9DdKNWNsKC0uk++akckyLq16Tx2WIinnZ6WRriAt6njQ==}
@@ -12127,6 +12136,8 @@ snapshots:
       - '@babel/core'
 
   balanced-match@1.0.2: {}
+
+  base-58@0.0.1: {}
 
   base-x@3.0.10:
     dependencies:
