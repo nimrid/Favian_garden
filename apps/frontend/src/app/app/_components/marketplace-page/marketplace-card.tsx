@@ -23,6 +23,7 @@ import { config } from '@/config';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib';
 import { useRouter } from 'next/navigation';
+import { Transaction } from '@solana/web3.js';
 
 interface MarketPlaceCardProps {
   id: string | number;
@@ -60,45 +61,93 @@ export const MarketPlaceCard: React.FC<MarketPlaceCardProps> = (props) => {
       return response.data;
     },
   });
+  console.log('Price being sent:', props.price);
 
-  const handlePurchaseNft = async () => {
-    if (!props.mintAddress) {
-      router.push('/app/market');
-    } else if (publicKey) {
-      const payload = {
-        mintAddress: String(props.mintAddress),
-        buyerWalletAddress: publicKey?.toString(),
-        price: props.price,
-      };
-      mutation.mutate(payload, {
-        onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['marketplace'] });
+ const handlePurchaseNft = async () => {
+  if (!props.mintAddress) {
+    router.push('/app/market');
+  } else if (publicKey) {
+    const payload = {
+      mintAddress: String(props.mintAddress),
+      buyerWalletAddress: publicKey?.toString(),
+      price: props.price,
+    };
+
+    try {
+      const response = await fetch(`${config.PURCHASE}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        const { transaction } = data;
+    
+        // Decode the base64 string back to a Buffer
+        const decodedTransaction = Buffer.from(transaction, 'base64');
+    
+        // Create a Transaction object from the decoded data
+        const transactionObject = Transaction.from(decodedTransaction);
+    
+        // Sign the transaction
+        const signedTransaction = await window.solana.signTransaction(transactionObject);
+        
+        // Send the signed transaction to the backend for processing
+        const confirmationResponse = await fetch(`${config.PURCHASE}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                signature: signedTransaction.signature,
+                mintAddress: props.mintAddress,
+                buyerWalletAddress: publicKey.toString(),
+            }),
+        });
+
+        const confirmationData = await confirmationResponse.json();
+        if (confirmationData.success) {
+          // Handle successful NFT purchase
           toast({
             title: 'Success',
             description: 'NFT purchased successfully!',
           });
-        },
-        onError: (error) => {
-          console.error('Purchase failed', error);
-
-          // @ts-expect-error: This will be there
-          const message = error?.response?.data?.message || error.message;
-
+        } else {
+          // Handle transfer failure
           toast({
-            title: 'Failed to purchase NFT. Please try again later.',
-            description: message,
+            title: 'Failed to purchase NFT',
+            description: confirmationData.message,
             variant: 'destructive',
           });
-        },
-      });
-    } else {
+        }
+      } else {
+        toast({
+          title: 'Failed to create transaction',
+          description: data.message,
+          variant: 'destructive',
+        });
+      }
+    } catch (error) {
+      console.error('Error during purchase:', error);
       toast({
         title: 'Error',
-        description: 'Please connect your wallet to purchase NFTs.',
+        description: 'An error occurred while processing the purchase.',
         variant: 'destructive',
       });
     }
-  };
+  } else {
+    toast({
+      title: 'Error',
+      description: 'Please connect your wallet to purchase NFTs.',
+      variant: 'destructive',
+    });
+  }
+};
+
+  
 
   return (
     <div

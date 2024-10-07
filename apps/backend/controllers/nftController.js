@@ -279,7 +279,7 @@ const purchaseNFT = async (req, res) => {
         .json({ success: false, message: "Price is required." });
     }
 
-    const parsedPrice = parseFloat(0.002); // Get the float value
+    const parsedPrice = parseFloat(price); // Get the float value
     // Convert SOL to lamports (multiply by 1e9 to convert SOL to lamports)
     const priceInLamports = BigInt(parsedPrice * 1e9);
 
