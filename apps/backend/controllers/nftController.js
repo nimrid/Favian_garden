@@ -269,24 +269,27 @@ const getAllNFTs = async (req, res) => {
 };
 // PURCHASE NFT
 const purchaseNFT = async (req, res) => {
-  console.log(req.body);
-  const { mintAddress, buyerWalletAddress, price } = req.body;
-  const parsedPrice = Math.floor(Number(price));
-
-  if (isNaN(parsedPrice)) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Invalid price value." });
-  }
-  if (!mintAddress || !buyerWalletAddress || !price) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "Mint address, buyer wallet address, and price are required.",
-      });
-  }
   try {
+    const { mintAddress, buyerWalletAddress, price } = req.body;
+    console.log(req.body);
+
+    // Ensure the price is provided and is not null or undefined
+    if (!price) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Price is required." });
+    }
+
+    // Parse the price and check for validity
+    const parsedPrice = parseFloat(price); // Use parseFloat to handle decimal prices
+
+    // Check if parsedPrice is a valid number and is non-negative
+    if (isNaN(parsedPrice) || parsedPrice < 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid price value." });
+    }
+
     // Step 1: Retrieve the NFT from the database
     const nft = await NFT.findOne({ mintAddress });
     console.log(nft);
@@ -298,12 +301,10 @@ const purchaseNFT = async (req, res) => {
 
     // Check if the NFT has royalty and creator information
     if (!nft.royaltyFee || !nft.walletAddress) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "NFT does not have royalty or creator information.",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "NFT does not have royalty or creator information.",
+      });
     }
 
     // Ensure wallet addresses are PublicKey objects
@@ -322,12 +323,10 @@ const purchaseNFT = async (req, res) => {
     const transactionFeeBuffer = 5000;
 
     if (buyerBalance < parsedPrice + transactionFeeBuffer) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: `Insufficient funds. Buyer balance is ${buyerBalance / 1_000_000_000} SOL, but ${parsedPrice / 1_000_000_000} SOL is required.`,
-        });
+      return res.status(400).json({
+        success: false,
+        message: `Insufficient funds. Buyer balance is ${buyerBalance / 1_000_000_000} SOL, but ${parsedPrice / 1_000_000_000} SOL is required.`,
+      });
     }
 
     // Step 3: Fetch the recent blockhash
