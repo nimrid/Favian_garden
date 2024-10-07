@@ -267,7 +267,6 @@ const getAllNFTs = async (req, res) => {
     });
   }
 };
-// PURCHASE NFT
 const purchaseNFT = async (req, res) => {
   try {
     const { mintAddress, buyerWalletAddress, price } = req.body;
@@ -280,11 +279,12 @@ const purchaseNFT = async (req, res) => {
         .json({ success: false, message: "Price is required." });
     }
 
-    // Parse the price and check for validity
-    const parsedPrice = parseFloat(price); // Use parseFloat to handle decimal prices
+    const parsedPrice = parseFloat(0.002); // Get the float value
+    // Convert SOL to lamports (multiply by 1e9 to convert SOL to lamports)
+    const priceInLamports = BigInt(parsedPrice * 1e9);
 
-    // Check if parsedPrice is a valid number and is non-negative
-    if (isNaN(parsedPrice) || parsedPrice < 0) {
+    // Ensure priceInLamports is a valid BigInt
+    if (isNaN(Number(priceInLamports)) || priceInLamports < 0) {
       return res
         .status(400)
         .json({ success: false, message: "Invalid price value." });
@@ -312,20 +312,22 @@ const purchaseNFT = async (req, res) => {
     const sellerPubKey = new PublicKey(nft.walletAddress);
 
     // Calculate royalty fee and seller amount in lamports
-    const royaltyAmount = Math.floor((nft.royaltyFee / 100) * parsedPrice);
-    const sellerAmount = parsedPrice - royaltyAmount;
+    const royaltyAmount = BigInt(
+      Math.floor((nft.royaltyFee / 100) * Number(priceInLamports))
+    );
+    const sellerAmount = priceInLamports - royaltyAmount;
 
     // Step 2: Connect to Solana cluster
     const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
     // ** Check buyer's wallet balance **
     const buyerBalance = await connection.getBalance(buyerPubKey);
-    const transactionFeeBuffer = 5000;
+    const transactionFeeBuffer = BigInt(5000);
 
-    if (buyerBalance < parsedPrice + transactionFeeBuffer) {
+    if (BigInt(buyerBalance) < priceInLamports + transactionFeeBuffer) {
       return res.status(400).json({
         success: false,
-        message: `Insufficient funds. Buyer balance is ${buyerBalance / 1_000_000_000} SOL, but ${parsedPrice / 1_000_000_000} SOL is required.`,
+        message: `Insufficient funds. Buyer balance is ${buyerBalance / 1_000_000_000} SOL, but ${priceInLamports / 1_000_000_000} SOL is required.`,
       });
     }
 
