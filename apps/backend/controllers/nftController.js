@@ -271,7 +271,7 @@ const purchaseNFT = async (req, res) => {
   try {
     const { mintAddress, buyerWalletAddress, price } = req.body;
     console.log(req.body);
-
+    console.log(price);
     // Ensure the price is provided and is not null or undefined
     if (!price) {
       return res
@@ -431,33 +431,67 @@ const getImage = async (req, res) => {
     });
   }
 };
+const bs58 = require("bs58"); // Import the bs58 library for encoding
 
 const confirmAndTransferNFT = async (req, res) => {
   const { signature, mintAddress, buyerWalletAddress } = req.body;
+  console.log(req.body);
 
   try {
-    // Step 6: Confirm the transaction
-    const confirmation = await connection.confirmTransaction(
-      signature,
-      "confirmed"
-    );
-    if (!confirmation) {
-      return res.status(500).json({
+    // Step 1: Check if the signature is in Buffer format and convert it to a base58-encoded string
+    let signatureString;
+    if (signature?.type === "Buffer" && Array.isArray(signature.data)) {
+      signatureString = bs58.encode(Buffer.from(signature.data));
+    } else {
+      return res.status(400).json({
         success: false,
-        message: "Transaction confirmation failed.",
+        message: "Invalid signature format. Expected a Buffer object.",
       });
     }
 
-    // Step 7: Retrieve and transfer the NFT
+    // Step 2: Confirm the transaction using the base58-encoded signature
+    const confirmation = await connection.confirmTransaction(
+      signatureString,
+      "confirmed"
+    );
+    if (confirmation?.value?.err) {
+      return res.status(500).json({
+        success: false,
+        message: "Transaction confirmation failed.",
+        error: confirmation.value.err,
+      });
+    }
+
+    // Step 3: Retrieve the NFT object using the mint address
     const nftObj = await metaplex
       .nfts()
       .findByMint({ mintAddress: new PublicKey(mintAddress) });
-    const transferResponse = await metaplex.nfts().transfer({
-      nftOrSft: nftObj,
-      toOwner: new PublicKey(buyerWalletAddress), // Buyer's wallet
-    });
 
-    // Step 8: Mark the NFT as sold in the database
+    if (!nftObj) {
+      return res.status(500).json({
+        success: false,
+        message: "Failed to retrieve NFT object using the mint address.",
+      });
+    }
+
+    // Step 4: Transfer the NFT to the buyer's wallet
+    let transferResponse;
+    try {
+      transferResponse = await metaplex.nfts().transfer({
+        nftOrSft: nftObj,
+        toOwner: new PublicKey(buyerWalletAddress), // Buyer's wallet
+      });
+    } catch (transferError) {
+      console.error("NFT Transfer Error:", transferError);
+      return res.status(500).json({
+        success: false,
+        message:
+          "NFT transfer failed. Unable to estimate transaction fees or execute transfer.",
+        error: transferError.message || transferError,
+      });
+    }
+
+    // Step 5: Mark the NFT as sold in the database
     await NFT.findOneAndUpdate({ mintAddress }, { isSold: true });
 
     return res.json({
@@ -469,7 +503,11 @@ const confirmAndTransferNFT = async (req, res) => {
     console.error("Transfer error:", error);
     return res
       .status(500)
-      .json({ success: false, message: "NFT transfer failed.", error });
+      .json({
+        success: false,
+        message: "NFT transfer failed.",
+        error: error.message || error,
+      });
   }
 };
 
