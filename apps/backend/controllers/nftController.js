@@ -1,13 +1,11 @@
 const NFT = require("../model/nftModel");
 const { uploadImageToGridFS } = require("../utils/gridFsStorage");
-const path = require("path");
-const fs = require("fs");
+
 const {
   Metaplex,
   keypairIdentity,
   irysStorage,
 } = require("@metaplex-foundation/js");
-const bs58 = require("bs58"); // Ensure bs58 is imported
 
 const {
   Keypair,
@@ -27,10 +25,6 @@ const {
   createMintToInstruction,
 } = require("@solana/spl-token");
 
-// const keypairPath = path.resolve(__dirname, "../my-keypair.json");
-// const secret = JSON.parse(fs.readFileSync(keypairPath, "utf8"));
-// const keypair = Keypair.fromSecretKey(new Uint8Array(secret));
-// Retrieve the secret key from the environment variable
 const secret = JSON.parse(process.env.SOLANA_SECRET_KEY);
 const keypair = Keypair.fromSecretKey(new Uint8Array(secret));
 const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
@@ -433,26 +427,32 @@ const getImage = async (req, res) => {
   }
 };
 const base58 = require("base-58");
+
 const confirmAndTransferNFT = async (req, res) => {
   const { signature, mintAddress, buyerWalletAddress } = req.body;
   console.log(req.body);
 
   try {
     const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+
     // Check if signature is in the correct format
     if (signature?.type === "Buffer" && Array.isArray(signature.data)) {
-      // Encode the signature to base58
-      // Encode the signature to base58 using the base-58 library
-      const signatureBuffer = Buffer.from(signature.data); // Create a Buffer from the data
-      const signatureString = base58.encode(signatureBuffer); // Encode to base58
+      // Create a Buffer from the data
+      const signatureBuffer = Buffer.from(signature.data);
+      // Encode to base58
+      const signatureString = base58.encode(signatureBuffer);
+
+      console.log("Encoded Signature: ", signatureString); // Debug log
 
       // Confirm the transaction using the base58-encoded signature
+      const block = await connection.getLatestBlockhash("confirmed");
       const confirmation = await connection.confirmTransaction(
-        signatureString,
-        { commitment: "confirmed", timeout: 60000 }
-      ); // 60 seconds
-      console.log(confirmation);
-      console.error("Transaction confirmation response:", confirmation);
+        {
+          signature: signatureString, // Changed from signatureString to signature
+          ...block,
+        },
+        "confirmed"
+      );
 
       if (confirmation?.value?.err) {
         return res.status(500).json({
@@ -463,25 +463,23 @@ const confirmAndTransferNFT = async (req, res) => {
       }
 
       // Retrieve the NFT object using the mint address
-      const nftObj = await metaplex
-        .nfts()
-        .findByMint({ mintAddress: new PublicKey(mintAddress) });
+      // const nftObj = await metaplex.nfts().findByMint({ mintAddress });
 
-      if (!nftObj) {
-        return res.status(500).json({
-          success: false,
-          message: "Failed to retrieve NFT object using the mint address.",
-        });
-      }
+      // if (!nftObj) {
+      //   return res.status(500).json({
+      //     success: false,
+      //     message: "Failed to retrieve NFT object using the mint address.",
+      //   });
+      // }
 
-      // Transfer the NFT to the buyer's wallet
-      const transferResponse = await metaplex.nfts().transfer({
-        nftOrSft: nftObj,
-        toOwner: new PublicKey(buyerWalletAddress), // Buyer's wallet
-      });
+      // // Transfer the NFT to the buyer's wallet
+      // const transferResponse = await metaplex.nfts().transfer({
+      //   nftOrSft: nftObj,
+      //   toOwner: new PublicKey(buyerWalletAddress), // Buyer's wallet
+      // });
 
-      // Mark the NFT as sold in the database
-      await NFT.findOneAndUpdate({ mintAddress }, { isSold: true });
+      // // Mark the NFT as sold in the database
+      // await NFT.findOneAndUpdate({ mintAddress }, { isSold: true });
 
       return res.json({
         success: true,
