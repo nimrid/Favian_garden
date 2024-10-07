@@ -271,19 +271,20 @@ const getAllNFTs = async (req, res) => {
 const purchaseNFT = async (req, res) => {
   console.log(req.body);
   const { mintAddress, buyerWalletAddress, price } = req.body;
-  const parsedPrice = Math.floor(Number(price)); // Ensure price is an integer
+  const parsedPrice = Math.floor(Number(price));
 
   if (isNaN(parsedPrice)) {
-    return res.status(400).json({
-      success: false,
-      message: "Invalid price value.",
-    });
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid price value." });
   }
   if (!mintAddress || !buyerWalletAddress || !price) {
-    return res.status(400).json({
-      success: false,
-      message: "Mint address, buyer wallet address, and price are required.",
-    });
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message: "Mint address, buyer wallet address, and price are required.",
+      });
   }
   try {
     // Step 1: Retrieve the NFT from the database
@@ -297,10 +298,12 @@ const purchaseNFT = async (req, res) => {
 
     // Check if the NFT has royalty and creator information
     if (!nft.royaltyFee || !nft.walletAddress) {
-      return res.status(400).json({
-        success: false,
-        message: "NFT does not have royalty or creator information.",
-      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: "NFT does not have royalty or creator information.",
+        });
     }
 
     // Ensure wallet addresses are PublicKey objects
@@ -312,54 +315,42 @@ const purchaseNFT = async (req, res) => {
     const sellerAmount = parsedPrice - royaltyAmount;
 
     // Step 2: Connect to Solana cluster
-    const connection = new Connection(
-      clusterApiUrl("devnet"), // Make sure to use devnet for testing
-      "confirmed"
-    );
+    const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
     // ** Check buyer's wallet balance **
     const buyerBalance = await connection.getBalance(buyerPubKey);
-    const transactionFeeBuffer = 5000; // A small buffer for transaction fees
+    const transactionFeeBuffer = 5000;
 
     if (buyerBalance < parsedPrice + transactionFeeBuffer) {
-      return res.status(400).json({
-        success: false,
-        message: `Insufficient funds. Buyer balance is ${
-          buyerBalance / 1_000_000_000
-        } SOL, but ${parsedPrice / 1_000_000_000} SOL is required.`,
-      });
+      return res
+        .status(400)
+        .json({
+          success: false,
+          message: `Insufficient funds. Buyer balance is ${buyerBalance / 1_000_000_000} SOL, but ${parsedPrice / 1_000_000_000} SOL is required.`,
+        });
     }
 
     // Step 3: Fetch the recent blockhash
     const { blockhash } = await connection.getLatestBlockhash();
 
     // Create transaction to transfer funds (unsigned)
+    const totalAmount = royaltyAmount + sellerAmount;
+
     const transaction = new Transaction({
       recentBlockhash: blockhash,
       feePayer: buyerPubKey,
-    })
-      .add(
-        SystemProgram.transfer({
-          fromPubkey: buyerPubKey, // Buyer's wallet as PublicKey
-          toPubkey: sellerPubKey, // Seller's wallet as PublicKey
-          lamports: royaltyAmount, // Royalty amount in lamports
-        })
-      )
-      .add(
-        SystemProgram.transfer({
-          fromPubkey: buyerPubKey, // Buyer's wallet as PublicKey
-          toPubkey: sellerPubKey, // Seller's wallet as PublicKey
-          lamports: sellerAmount, // Remaining amount after royalty
-        })
-      );
+    }).add(
+      SystemProgram.transfer({
+        fromPubkey: buyerPubKey,
+        toPubkey: sellerPubKey,
+        lamports: totalAmount,
+      })
+    );
 
     // Serialize transaction and send it to the buyer for signing
     const serializedTransaction = transaction
       .serialize({ requireAllSignatures: false })
       .toString("base64");
-
-    // ** Update the NFT to mark it as sold after the transaction is successfully created **
-    await NFT.findOneAndUpdate({ mintAddress }, { isSold: true });
 
     return res.json({
       success: true,
@@ -440,62 +431,44 @@ const getImage = async (req, res) => {
   }
 };
 
-const confirmPurchase = async (req, res) => {
-  const { signedTransaction, buyerPrivateKey } = req.body;
-
-  if (!signedTransaction || !buyerPrivateKey) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "Signed transaction and buyer private key are required.",
-      });
-  }
+const confirmAndTransferNFT = async (req, res) => {
+  const { signature, mintAddress, buyerWalletAddress } = req.body;
 
   try {
-    // Convert the signed transaction back from base64
-    const transaction = Transaction.from(
-      Buffer.from(signedTransaction, "base64")
+    // Step 6: Confirm the transaction
+    const confirmation = await connection.confirmTransaction(
+      signature,
+      "confirmed"
     );
-
-    // Create a keypair from the buyer's private key
-    const buyerKeypair = Keypair.fromSecretKey(
-      new Uint8Array(JSON.parse(buyerPrivateKey))
-    );
-
-    // Send the transaction and wait for confirmation
-    const signature = await connection.sendTransaction(
-      transaction,
-      [buyerKeypair],
-      { skipPreflight: false, preflightCommitment: "confirmed" }
-    );
-    await connection.confirmTransaction(signature, "confirmed");
-
-    // Mark NFT as sold in the database
-    const nft = await NFT.findOneAndUpdate(
-      { mintAddress: transaction.instructions[0].keys[0].pubkey.toBase58() },
-      { isSold: true }
-    );
-
-    if (!nft) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "NFT not found for marking as sold.",
-        });
+    if (!confirmation) {
+      return res.status(500).json({
+        success: false,
+        message: "Transaction confirmation failed.",
+      });
     }
+
+    // Step 7: Retrieve and transfer the NFT
+    const nftObj = await metaplex
+      .nfts()
+      .findByMint({ mintAddress: new PublicKey(mintAddress) });
+    const transferResponse = await metaplex.nfts().transfer({
+      nftOrSft: nftObj,
+      toOwner: new PublicKey(buyerWalletAddress), // Buyer's wallet
+    });
+
+    // Step 8: Mark the NFT as sold in the database
+    await NFT.findOneAndUpdate({ mintAddress }, { isSold: true });
 
     return res.json({
       success: true,
-      message: "Purchase completed successfully.",
-      signature,
+      message: "NFT transferred to buyer successfully.",
+      transactionId: transferResponse.signature, // The transaction ID of the NFT transfer
     });
   } catch (error) {
-    console.error("Transaction confirmation error:", error);
+    console.error("Transfer error:", error);
     return res
       .status(500)
-      .json({ success: false, message: "Transaction confirmation failed." });
+      .json({ success: false, message: "NFT transfer failed.", error });
   }
 };
 
@@ -505,5 +478,5 @@ module.exports = {
   mintNFT,
   recentNFTs,
   getImage,
-  confirmPurchase,
+  confirmAndTransferNFT,
 };
