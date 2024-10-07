@@ -438,6 +438,7 @@ const confirmAndTransferNFT = async (req, res) => {
   console.log(req.body);
 
   try {
+    const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
     // Check if signature is in the correct format
     if (signature?.type === "Buffer" && Array.isArray(signature.data)) {
       // Encode the signature to base58
@@ -448,8 +449,10 @@ const confirmAndTransferNFT = async (req, res) => {
       // Confirm the transaction using the base58-encoded signature
       const confirmation = await connection.confirmTransaction(
         signatureString,
-        "confirmed"
-      );
+        { commitment: "confirmed", timeout: 60000 }
+      ); // 60 seconds
+      console.log(confirmation);
+      console.error("Transaction confirmation response:", confirmation);
 
       if (confirmation?.value?.err) {
         return res.status(500).json({
