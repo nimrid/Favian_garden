@@ -327,13 +327,12 @@ const purchaseNFT = async (req, res) => {
     }
 
     // Step 3: Fetch the recent blockhash
-    const { blockhash } = await connection.getLatestBlockhash();
+    // const { blockhash } = await connection.getLatestBlockhash();
 
     // Create transaction to transfer funds (unsigned)
     const totalAmount = royaltyAmount + sellerAmount;
 
     const transaction = new Transaction({
-      recentBlockhash: blockhash,
       feePayer: buyerPubKey,
     }).add(
       SystemProgram.transfer({
@@ -434,7 +433,7 @@ const confirmAndTransferNFT = async (req, res) => {
   console.log(req.body);
 
   try {
-    const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
+    // const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
     // Check if signature is in the correct format
     if (signature?.type === "Buffer" && Array.isArray(signature.data)) {
@@ -446,22 +445,22 @@ const confirmAndTransferNFT = async (req, res) => {
       console.log("Encoded Signature: ", signatureString); // Debug log
 
       // Confirm the transaction using the base58-encoded signature
-      const block = await connection.getLatestBlockhash("confirmed");
-      const confirmation = await connection.confirmTransaction(
-        {
-          signature: signatureString, // Changed from signatureString to signature
-          ...block,
-        },
-        "confirmed"
-      );
+      // const block = await connection.getLatestBlockhash("confirmed");
+      // const confirmation = await connection.confirmTransaction(
+      //   {
+      //     signature: signatureString, // Changed from signatureString to signature
+      //     ...block,
+      //   },
+      //   "confirmed"
+      // );
 
-      if (confirmation?.value?.err) {
-        return res.status(500).json({
-          success: false,
-          message: "Transaction confirmation failed.",
-          error: confirmation.value.err,
-        });
-      }
+      // if (confirmation?.value?.err) {
+      //   return res.status(500).json({
+      //     success: false,
+      //     message: "Transaction confirmation failed.",
+      //     error: confirmation.value.err,
+      //   });
+      // }
 
       //Retrieve the NFT object using the mint address
       const nftObj = await metaplex.nfts().findByMint({ mintAddress });
