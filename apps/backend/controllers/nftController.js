@@ -347,6 +347,7 @@ const purchaseNFT = async (req, res) => {
     const serializedTransaction = transaction
       .serialize({ requireAllSignatures: false })
       .toString("base64");
+    await NFT.findOneAndUpdate({ mintAddress }, { isSold: true });
 
     return res.json({
       success: true,
@@ -462,24 +463,24 @@ const confirmAndTransferNFT = async (req, res) => {
         });
       }
 
-      // Retrieve the NFT object using the mint address
-      // const nftObj = await metaplex.nfts().findByMint({ mintAddress });
+      //Retrieve the NFT object using the mint address
+      const nftObj = await metaplex.nfts().findByMint({ mintAddress });
 
-      // if (!nftObj) {
-      //   return res.status(500).json({
-      //     success: false,
-      //     message: "Failed to retrieve NFT object using the mint address.",
-      //   });
-      // }
+      if (!nftObj) {
+        return res.status(500).json({
+          success: false,
+          message: "Failed to retrieve NFT object using the mint address.",
+        });
+      }
 
-      // // Transfer the NFT to the buyer's wallet
-      // const transferResponse = await metaplex.nfts().transfer({
-      //   nftOrSft: nftObj,
-      //   toOwner: new PublicKey(buyerWalletAddress), // Buyer's wallet
-      // });
+      // Transfer the NFT to the buyer's wallet
+      const transferResponse = await metaplex.nfts().transfer({
+        nftOrSft: nftObj,
+        toOwner: new PublicKey(buyerWalletAddress), // Buyer's wallet
+      });
 
-      // // Mark the NFT as sold in the database
-      // await NFT.findOneAndUpdate({ mintAddress }, { isSold: true });
+      // Mark the NFT as sold in the database
+      await NFT.findOneAndUpdate({ mintAddress }, { isSold: true });
 
       return res.json({
         success: true,
