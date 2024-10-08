@@ -22,9 +22,8 @@ const {
   createInitializeMintInstruction,
   createInitializeAccountInstruction,
   createMintToInstruction,
-  getOrCreateAssociatedTokenAccount,
   transfer,
-  getAssociatedTokenAddress,
+  getOrCreateAssociatedTokenAccount,
 } = require("@solana/spl-token");
 
 const secret = JSON.parse(process.env.SOLANA_SECRET_KEY);
@@ -269,6 +268,7 @@ const purchaseNFT = async (req, res) => {
   try {
     const { mintAddress, buyerWalletAddress, price } = req.body;
 
+    // Validation
     if (!price) {
       return res
         .status(400)
@@ -284,6 +284,7 @@ const purchaseNFT = async (req, res) => {
         .json({ success: false, message: "Invalid price value." });
     }
 
+    // Fetch NFT data from the database
     const nft = await NFT.findOne({ mintAddress });
     if (!nft) {
       return res
@@ -293,6 +294,7 @@ const purchaseNFT = async (req, res) => {
 
     const buyerPubKey = new PublicKey(buyerWalletAddress);
     const sellerPubKey = new PublicKey(nft.walletAddress);
+    const mintPublicKey = new PublicKey(mintAddress);
 
     const royaltyAmount = BigInt(
       Math.floor((nft.royaltyFee / 100) * Number(priceInLamports))
@@ -310,42 +312,44 @@ const purchaseNFT = async (req, res) => {
       });
     }
 
-    // Fetch the seller's token account address
-    const sellerTokenAccount = await getAssociatedTokenAddress(
-      mintAddress,
-      sellerPubKey
-    );
+    // // Fetch or create the seller's token account address
+    // const sellerTokenAccount = await getOrCreateAssociatedTokenAccount(
+    //   connection,
+    //   sellerPubKey,
+    //   mintPublicKey,
+    //   sellerPubKey // Seller owns this account
+    // );
 
-    // Fetch or create the buyer's token account address
-    const buyerTokenAccount = await getOrCreateAssociatedTokenAccount(
-      connection,
-      buyerPubKey,
-      mintAddress,
-      true // Allow creating a new account if it doesn't exist
-    );
+    // // Fetch or create the buyer's token account address
+    // const buyerTokenAccount = await getOrCreateAssociatedTokenAccount(
+    //   connection,
+    //   buyerPubKey,
+    //   mintPublicKey,
+    //   buyerPubKey // Buyer owns this account
+    // );
 
     const { blockhash } = await connection.getLatestBlockhash();
 
+    // Create the transaction
     const transaction = new Transaction({
       recentBlockhash: blockhash,
       feePayer: buyerPubKey,
-    })
-      .add(
-        SystemProgram.transfer({
-          fromPubkey: buyerPubKey,
-          toPubkey: sellerPubKey,
-          lamports: totalAmount,
-        })
-      )
-      .add(
-        transfer(
-          sellerTokenAccount,
-          buyerTokenAccount.address,
-          sellerPubKey,
-          [],
-          1 // Transfer 1 NFT
-        )
-      );
+    }).add(
+      SystemProgram.transfer({
+        fromPubkey: buyerPubKey,
+        toPubkey: sellerPubKey,
+        lamports: sellerAmount,
+      })
+    );
+    // .add(
+    //   transfer(
+    //     sellerTokenAccount.address,
+    //     buyerTokenAccount.address,
+    //     sellerPubKey,
+    //     [],
+    //     1 // Transfer 1 NFT
+    //   )
+    // );
 
     const serializedTransaction = transaction
       .serialize({ requireAllSignatures: false })
@@ -363,6 +367,44 @@ const purchaseNFT = async (req, res) => {
       .json({ success: false, message: "Transaction creation failed." });
   }
 };
+// const getOrCreateAssociatedTokenAccount = async (
+//   connection,
+//   payer,
+//   mint,
+//   owner
+// ) => {
+//   const associatedTokenAddress = await getAssociatedTokenAddress(
+//     mint,
+//     owner,
+//     false
+//   );
+
+//   try {
+//     // Try to fetch the token account balance
+//     await connection.getTokenAccountBalance(associatedTokenAddress);
+//     return associatedTokenAddress; // Return if the account exists
+//   } catch (error) {
+//     // If the token account does not exist, create it
+//     if (error instanceof TokenAccountNotFoundError) {
+//       const transaction = new Transaction().add(
+//         createAssociatedTokenAccountInstruction(
+//           payer,
+//           associatedTokenAddress,
+//           owner,
+//           mint
+//         )
+//       );
+
+//       const latestBlockhash = await connection.getLatestBlockhash();
+//       transaction.recentBlockhash = latestBlockhash.blockhash;
+//       transaction.feePayer = payer;
+
+//       await sendAndConfirmTransaction(connection, transaction, [payer]);
+//       return associatedTokenAddress; // Return newly created account
+//     }
+//     throw error; // Propagate any other errors
+//   }
+//};
 
 // Get recently minted NFTs for a user
 const recentNFTs = async (req, res) => {
