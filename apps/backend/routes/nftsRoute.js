@@ -7,6 +7,7 @@ const {
   recentNFTs,
   getImage,
   confirmAndTransferNFT,
+  updateStatus,
 } = require("../controllers/nftController");
 const upload = require("../middlewares/uploadMiddleware");
 
@@ -17,4 +18,5 @@ router.post("/purchase", purchaseNFT); // Purchase NFT
 router.get("/recent/:walletAddress", recentNFTs); // Get recent
 router.get("/image/:uri", getImage); // Get image
 router.post("/confirm-purchase", confirmAndTransferNFT); //
+router.post("/update-nft-status", updateStatus);
 module.exports = router;
