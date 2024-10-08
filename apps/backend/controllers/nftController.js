@@ -327,12 +327,13 @@ const purchaseNFT = async (req, res) => {
     }
 
     // Step 3: Fetch the recent blockhash
-    // const { blockhash } = await connection.getLatestBlockhash();
+    const { blockhash } = await connection.getLatestBlockhash();
 
     // Create transaction to transfer funds (unsigned)
     const totalAmount = royaltyAmount + sellerAmount;
 
     const transaction = new Transaction({
+      recentBlockhash: blockhash,
       feePayer: buyerPubKey,
     }).add(
       SystemProgram.transfer({
