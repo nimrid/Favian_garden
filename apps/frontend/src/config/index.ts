@@ -13,5 +13,6 @@ export const config = {
   PURCHASE: `${BASE_BACKEND_URL}/api/v1/nfts/purchase`,
   RECENT: `${BASE_BACKEND_URL}/api/v1/nfts/recent`,
   IMAGES: `${BASE_BACKEND_URL}/api/v1/nfts/image`,
-  CONFIRM: `${BASE_BACKEND_URL}/api/v1/nfts/confirm-purchase`
+  CONFIRM: `${BASE_BACKEND_URL}/api/v1/nfts/confirm-purchase`,
+  UPDATE: `${BASE_BACKEND_URL}/api/v1/nfts/update-nft-status`
 };
