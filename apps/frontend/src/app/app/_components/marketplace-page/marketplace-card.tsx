@@ -2,7 +2,7 @@
 
 import { useWallet } from '@solana/wallet-adapter-react';
 import { Connection, clusterApiUrl, Transaction } from '@solana/web3.js';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { Heart, Loader2 } from 'lucide-react';
 import Image from 'next/image';
@@ -48,7 +48,6 @@ export const MarketPlaceCard: React.FC<MarketPlaceCardProps> = (props) => {
   const connection = new Connection(clusterApiUrl('devnet'),'confirmed'); // Use the correct cluster (mainnet-beta, devnet, testnet)
 
   // React Query
-  const queryClient = useQueryClient();
 
   // Toast
   const { toast } = useToast();
