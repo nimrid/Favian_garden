@@ -71,50 +71,57 @@ export const MarketPlaceCard: React.FC<MarketPlaceCardProps> = (props) => {
         price: props.price,
       };
       console.log(payload);
-
+  
       try {
         // Call the mutation and wait for the response
         const data = await mutation.mutateAsync(payload);
-
+  
         if (data.success) {
           const { transaction } = data;
           console.log('transaction', transaction);
-
+  
           // Step 1: Decode the base64 transaction string into a Transaction object
           const decodedTransaction = Buffer.from(transaction, 'base64');
           const transactionObject = Transaction.from(decodedTransaction);
           console.log('transactionObject', transactionObject);
-
-        // Fetch a recent blockhash
-        const { blockhash } = await connection.getLatestBlockhash();
-        transactionObject.recentBlockhash = blockhash;
-        transactionObject.feePayer = publicKey; // Set the fee payer
+  
+          // Fetch a recent blockhash
+          const { blockhash } = await connection.getLatestBlockhash();
+          transactionObject.recentBlockhash = blockhash;
+          transactionObject.feePayer = publicKey; // Set the fee payer
+  
           // Step 2: Request the user to sign the transaction using the wallet adapter
           const signedTransaction = await signTransaction(transactionObject);
           console.log('signedTransaction', signedTransaction);
-
+  
           // Step 3: Send the signed transaction directly to the Solana network
           const signature = await connection.sendRawTransaction(signedTransaction.serialize(), { skipPreflight: false });
           console.log('signature', signature);
-
+  
           // Step 4: Confirm the transaction on the Solana network
           const confirmation = await connection.confirmTransaction(signature, 'processed');
-
+  
           if (confirmation.value.err) {
             // Handle confirmation error
             throw new Error("Transaction failed");
           }
- // ** Now update the NFT status in the database only if the transaction was successful **
- await axios.post(config.CONFIRM, {
-  mintAddress: props.mintAddress,
-  isSold: true,
-});
+        // ** Now update the NFT status in the database only if the transaction was successful **
+        axios.post(config.UPDATE, {
+         mintAddress: String(props.mintAddress), // Replace with the actual mint address of the NFT
+          isSold: true, // Setting the status of the NFT to 'sold'
+        })
+          .then(response => {
+            console.log('NFT status updated successfully:', response.data);
+          })
+          .catch(error => {
+            console.error('Error updating NFT status:', error.message);
+          });
           // Handle successful NFT purchase
           toast({
             title: 'Success',
             description: 'NFT purchased successfully!',
           });
-
+  
           // Optionally update NFT status here if needed
         } else {
           toast({
@@ -139,10 +146,7 @@ export const MarketPlaceCard: React.FC<MarketPlaceCardProps> = (props) => {
       });
     }
   };
-
-
-
-
+  
   return (
     <div
       key={props.mintAddress}
